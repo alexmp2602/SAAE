@@ -1,87 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
+import { useAcciones } from "@/lib/useAcciones";
 
-type Accion = {
-  id: number;
-  docente: string;
-  accion: string;
-  escuela: string;
-  puntaje: number;
-  estado: "pendiente" | "aprobada" | "rechazada";
-};
-
-const ACCIONES_KEY = "acciones-aprobaciones";
-
-const accionesIniciales: Accion[] = [
-  {
-    id: 1,
-    docente: "María López",
-    accion: "MAD",
-    escuela: "Esc. 5",
-    puntaje: 9.1,
-    estado: "pendiente",
-  },
-  {
-    id: 2,
-    docente: "Ana Torres",
-    accion: "Servicio Provisorio",
-    escuela: "Esc. 9",
-    puntaje: 6.0,
-    estado: "pendiente",
-  },
-  {
-    id: 3,
-    docente: "Laura Pérez",
-    accion: "Traslado",
-    escuela: "Esc. 7",
-    puntaje: 8.0,
-    estado: "pendiente",
-  },
-  {
-    id: 4,
-    docente: "Javier Gómez",
-    accion: "Acrecentamiento",
-    escuela: "Esc. 3",
-    puntaje: 7.2,
-    estado: "pendiente",
-  },
-];
+const ACCION_OPCIONES = [
+  "Todas",
+  "MAD",
+  "Acrecentamiento",
+  "Servicio Provisorio",
+  "Traslado",
+] as const;
 
 export default function PanelAprobaciones() {
-  const [acciones, setAcciones] = useState<Accion[]>([]);
-  const [filtroAccion, setFiltroAccion] = useState<string>("Todas");
+  const { acciones, actualizarEstado, loading, error } = useAcciones();
+  const [filtroAccion, setFiltroAccion] =
+    useState<(typeof ACCION_OPCIONES)[number]>("Todas");
 
-  // Cargar datos desde localStorage
-  useEffect(() => {
-    const datosGuardados = localStorage.getItem(ACCIONES_KEY);
-    if (datosGuardados) {
-      setAcciones(JSON.parse(datosGuardados));
-    } else {
-      setAcciones(accionesIniciales);
-      localStorage.setItem(ACCIONES_KEY, JSON.stringify(accionesIniciales));
-    }
-  }, []);
-
-  // Actualizar estado y guardar en localStorage
-  const actualizarEstado = (
-    id: number,
-    nuevoEstado: "aprobada" | "rechazada"
-  ) => {
-    const nuevasAcciones = acciones.map((a) =>
-      a.id === id ? { ...a, estado: nuevoEstado } : a
-    );
-    setAcciones(nuevasAcciones);
-    localStorage.setItem(ACCIONES_KEY, JSON.stringify(nuevasAcciones));
-  };
-
-  // Filtrar acciones por tipo
-  const accionesFiltradas = acciones.filter((a) =>
-    filtroAccion === "Todas" ? true : a.accion === filtroAccion
+  const accionesFiltradas = useMemo(
+    () =>
+      acciones.filter((a) =>
+        filtroAccion === "Todas" ? true : a.accion === filtroAccion
+      ),
+    [acciones, filtroAccion]
   );
 
-  // Exportar CSV de aprobadas
-  const exportarAprobadasCSV = () => {
+  const exportarAprobadasCSV = useCallback(() => {
     const aprobadas = accionesFiltradas.filter((a) => a.estado === "aprobada");
     if (aprobadas.length === 0) {
       alert("No hay acciones aprobadas con ese filtro para exportar.");
@@ -97,7 +40,7 @@ export default function PanelAprobaciones() {
     ]);
 
     const csvContent = [header, ...rows].map((e) => e.join(",")).join("\n");
-    const BOM = "\uFEFF"; // Marca de orden de bytes UTF-8
+    const BOM = "\uFEFF";
     const blob = new Blob([BOM + csvContent], {
       type: "text/csv;charset=utf-8;",
     });
@@ -109,35 +52,47 @@ export default function PanelAprobaciones() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
+  }, [accionesFiltradas]);
+
+  if (loading) return <p className="p-4 text-gray-500">Cargando acciones...</p>;
+  if (error) return <p className="p-4 text-red-500">Error: {error}</p>;
 
   return (
-    <div className="bg-white shadow rounded-md overflow-hidden">
-      <div className="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <section className="bg-white shadow rounded-md overflow-hidden">
+      <header className="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor="filtroAccion"
+            className="text-sm font-medium text-gray-700"
+          >
             Filtrar por acción:
           </label>
           <select
+            id="filtroAccion"
             value={filtroAccion}
-            onChange={(e) => setFiltroAccion(e.target.value)}
+            onChange={(e) =>
+              setFiltroAccion(
+                e.target.value as (typeof ACCION_OPCIONES)[number]
+              )
+            }
             className="border rounded px-2 py-1 text-sm"
           >
-            <option value="Todas">Todas</option>
-            <option value="MAD">MAD</option>
-            <option value="Acrecentamiento">Acrecentamiento</option>
-            <option value="Servicio Provisorio">Servicio Provisorio</option>
-            <option value="Traslado">Traslado</option>
+            {ACCION_OPCIONES.map((opcion) => (
+              <option key={opcion} value={opcion}>
+                {opcion}
+              </option>
+            ))}
           </select>
         </div>
 
         <button
           onClick={exportarAprobadasCSV}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          disabled={accionesFiltradas.length === 0}
         >
           Descargar archivo para Excel
         </button>
-      </div>
+      </header>
 
       <table className="w-full table-auto text-sm">
         <thead className="bg-gray-100 text-left font-medium text-gray-600">
@@ -192,6 +147,6 @@ export default function PanelAprobaciones() {
           ))}
         </tbody>
       </table>
-    </div>
+    </section>
   );
 }

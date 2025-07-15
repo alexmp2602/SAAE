@@ -6,8 +6,9 @@ import Image from "next/image";
 
 const navItems = [
   { href: "/", label: "Inicio" },
-  { href: "/acciones", label: "Acciones Pendientes" },
+  { href: "/importar", label: "Importar Archivo" },
   { href: "/cargar", label: "Cargar Acción" },
+  { href: "/acciones", label: "Acciones Pendientes" },
   { href: "/aprobaciones", label: "Aprobaciones" },
 ];
 
