@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useAcciones } from "@/lib/useAcciones";
 
 export default function AccionesPage() {
