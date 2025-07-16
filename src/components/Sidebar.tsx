@@ -33,7 +33,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed sm:static z-50 sm:z-auto bg-white border-r shadow-sm w-64 h-full transform transition-transform duration-300 ease-in-out ${
+        className={`fixed sm:static z-50 px-4 sm:z-auto bg-white border-r shadow-sm w-64 h-full transform transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"
         }`}
         role="navigation"
@@ -44,12 +44,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           alt="Logo SAAE"
           width={150}
           height={50}
-          className="m-4"
           style={{ height: "auto", width: "auto" }}
           priority
         />
 
-        <nav className="px-4">
+        <nav>
           <ul className="space-y-1">
             {navItems.map(({ href, label }) => {
               const isActive = pathname === href;
