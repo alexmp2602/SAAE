@@ -1,8 +1,9 @@
+// src/components/ImportarPageClient.tsx
 "use client";
 
 import { useState } from "react";
 import ArchivoImportador from "./ArchivoImportador";
-import ComparadorAcciones from "./ComparadorAcciones";
+import ComparadorAcciones from "../../components/ComparadorAcciones";
 import type { AccionSinID, ParsedAccion } from "@/lib/types";
 
 type Props = {
@@ -29,9 +30,14 @@ export default function ImportarPageClient({ accionesExistentes }: Props) {
 
       {nuevasAcciones.length > 0 && (
         <>
-          <h2 className="text-xl font-semibold text-gray-700">
+          <div className="text-sm text-green-700 font-medium">
+            {nuevasAcciones.length} acciones nuevas importadas con éxito.
+          </div>
+
+          <h2 className="text-xl font-semibold text-gray-700 mt-6">
             Comparación con acciones existentes
           </h2>
+
           <ComparadorAcciones
             nuevas={nuevasAcciones}
             existentes={accionesExistentes}

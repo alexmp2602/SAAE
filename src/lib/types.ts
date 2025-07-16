@@ -21,3 +21,11 @@ export type ParsedAccion = {
   puntaje: number;
   duplicado: boolean;
 };
+
+export type NuevaAccion = {
+  docente: string;
+  accion: string;
+  escuela: string;
+  fecha: string;
+  puntaje: number;
+};

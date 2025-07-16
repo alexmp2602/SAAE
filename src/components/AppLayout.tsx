@@ -9,17 +9,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [menuAbierto, setMenuAbierto] = useState(false);
 
   return (
-    <div className="flex h-dvh bg-gray-100 text-gray-900 antialiased">
+    <div className="flex h-dvh bg-gray-100 text-gray-900 antialiased transition-colors duration-300">
       <Sidebar isOpen={menuAbierto} onClose={() => setMenuAbierto(false)} />
 
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header onMenuClick={() => setMenuAbierto((prev) => !prev)} />
         <Toaster position="top-right" />
 
-        <main className="p-6 overflow-y-auto flex-1">{children}</main>
+        <main className="flex-1 overflow-y-auto px-6 py-4 sm:px-8 sm:py-6">
+          {children}
+        </main>
 
-        {/* Footer */}
-        <footer className="bg-white border-t p-4 text-center text-sm text-gray-500">
+        <footer className="bg-white border-t border-gray-200 p-4 text-center text-sm text-gray-500">
           Versión Beta - Sistema en desarrollo. Para sugerencias o errores,
           escribí a{" "}
           <a

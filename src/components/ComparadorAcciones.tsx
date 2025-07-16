@@ -24,9 +24,9 @@ export default function ComparadorAcciones({ nuevas, existentes }: Props) {
   });
 
   return (
-    <div className="bg-white shadow rounded-md overflow-x-auto border">
-      <table className="min-w-full text-sm border-collapse">
-        <thead className="bg-gray-100 text-gray-700 font-medium">
+    <div className="overflow-x-auto rounded-lg border shadow-sm bg-white">
+      <table className="min-w-full border-collapse text-sm">
+        <thead className="bg-gray-50 text-gray-700 font-semibold sticky top-0 z-10">
           <tr>
             <th className="px-4 py-3 text-left">Docente</th>
             <th className="px-4 py-3 text-left">Escuela</th>
@@ -50,18 +50,18 @@ export default function ComparadorAcciones({ nuevas, existentes }: Props) {
               color = "text-green-700";
               bg = "bg-green-50";
             } else if (cambioPuntaje) {
-              estado = `🔁 Puntaje cambiado: ${vieja.puntaje} → ${nueva.puntaje}`;
+              estado = `🔁 Puntaje: ${vieja.puntaje} → ${nueva.puntaje}`;
               color = "text-yellow-700";
               bg = "bg-yellow-50";
             }
 
             return (
               <tr key={idx} className={`border-t ${bg}`}>
-                <td className="px-4 py-2">{nueva.docente}</td>
-                <td className="px-4 py-2">{nueva.escuela}</td>
-                <td className="px-4 py-2">{nueva.accion}</td>
-                <td className="px-4 py-2">{nueva.fecha}</td>
-                <td className="px-4 py-2">{nueva.puntaje}</td>
+                <td className="px-4 py-2 whitespace-nowrap">{nueva.docente}</td>
+                <td className="px-4 py-2 whitespace-nowrap">{nueva.escuela}</td>
+                <td className="px-4 py-2 whitespace-nowrap">{nueva.accion}</td>
+                <td className="px-4 py-2 whitespace-nowrap">{nueva.fecha}</td>
+                <td className="px-4 py-2 text-center">{nueva.puntaje}</td>
                 <td className={`px-4 py-2 font-medium ${color}`}>{estado}</td>
               </tr>
             );

@@ -2,29 +2,63 @@
 
 import { useMemo } from "react";
 import { useAcciones } from "@/lib/useAcciones";
+import { CheckCircle, XCircle, Clock, FileText } from "lucide-react";
+
+type CardVariant = "default" | "warning" | "success" | "error";
+
+const variantStyles: Record<
+  CardVariant,
+  { bg: string; text: string; Icon: React.ElementType }
+> = {
+  default: {
+    bg: "bg-white",
+    text: "text-gray-900",
+    Icon: FileText,
+  },
+  warning: {
+    bg: "bg-yellow-100",
+    text: "text-yellow-700",
+    Icon: Clock,
+  },
+  success: {
+    bg: "bg-green-100",
+    text: "text-green-700",
+    Icon: CheckCircle,
+  },
+  error: {
+    bg: "bg-red-100",
+    text: "text-red-700",
+    Icon: XCircle,
+  },
+};
 
 const CardResumen = ({
   label,
   value,
-  bg,
-  text,
+  variant = "default",
 }: {
   label: string;
   value: number;
-  bg: string;
-  text: string;
-}) => (
-  <div
-    className={`rounded-lg shadow p-4 ${bg}`}
-    aria-label={`${label}: ${value}`}
-  >
-    <p className="text-sm text-gray-700">{label}</p>
-    <p className={`text-3xl font-bold ${text}`}>{value}</p>
-  </div>
-);
+  variant?: CardVariant;
+}) => {
+  const { bg, text, Icon } = variantStyles[variant];
+
+  return (
+    <div
+      className={`rounded-lg shadow p-4 ${bg}`}
+      aria-label={`${label}: ${value}`}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-base font-medium">{label}</p>
+        <Icon className={`w-5 h-5 ${text}`} />
+      </div>
+      <p className={`text-2xl font-bold ${text}`}>{value}</p>
+    </div>
+  );
+};
 
 export default function DashboardResumen() {
-  const { acciones } = useAcciones(); // ✅ se conecta a Supabase
+  const { acciones } = useAcciones();
 
   const resumen = useMemo(() => {
     return {
@@ -38,31 +72,32 @@ export default function DashboardResumen() {
   return (
     <section
       className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-      aria-label="Resumen de acciones"
+      aria-labelledby="resumen-acciones"
+      role="region"
     >
+      <h2 id="resumen-acciones" className="sr-only">
+        Resumen de acciones
+      </h2>
+
       <CardResumen
         label="Total de acciones"
         value={resumen.total}
-        bg="bg-white"
-        text="text-gray-900"
+        variant="default"
       />
       <CardResumen
         label="Pendientes"
         value={resumen.pendientes}
-        bg="bg-yellow-100"
-        text="text-yellow-700"
+        variant="warning"
       />
       <CardResumen
         label="Aprobadas"
         value={resumen.aprobadas}
-        bg="bg-green-100"
-        text="text-green-700"
+        variant="success"
       />
       <CardResumen
         label="Rechazadas"
         value={resumen.rechazadas}
-        bg="bg-red-100"
-        text="text-red-700"
+        variant="error"
       />
     </section>
   );

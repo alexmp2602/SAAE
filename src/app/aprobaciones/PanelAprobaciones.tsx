@@ -57,14 +57,17 @@ export default function PanelAprobaciones() {
   if (loading) return <p className="p-4 text-gray-500">Cargando acciones...</p>;
 
   return (
-    <section className="bg-white shadow rounded-md overflow-hidden">
+    <section
+      className="bg-white shadow rounded-md overflow-hidden"
+      aria-label="Panel de Aprobaciones"
+    >
       <header className="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <label
             htmlFor="filtroAccion"
             className="text-sm font-medium text-gray-700"
           >
-            Filtrar por acción:
+            Filtrar por tipo de acción
           </label>
           <select
             id="filtroAccion"
@@ -74,7 +77,7 @@ export default function PanelAprobaciones() {
                 e.target.value as (typeof ACCION_OPCIONES)[number]
               )
             }
-            className="border rounded px-2 py-1 text-sm"
+            className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {ACCION_OPCIONES.map((opcion) => (
               <option key={opcion} value={opcion}>
@@ -86,23 +89,23 @@ export default function PanelAprobaciones() {
 
         <button
           onClick={exportarAprobadasCSV}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 transition"
           disabled={accionesFiltradas.length === 0}
         >
-          Descargar archivo para Excel
+          Descargar aprobadas (.csv)
         </button>
       </header>
 
       <div className="w-full overflow-x-auto">
         <table className="min-w-[640px] w-full table-auto text-sm">
-          <thead className="bg-gray-100 text-left font-medium text-gray-600">
+          <thead className="bg-gray-100 text-left font-semibold text-gray-700">
             <tr>
               <th className="p-3">Docente</th>
               <th className="p-3">Acción</th>
               <th className="p-3">Escuela</th>
               <th className="p-3">Puntaje</th>
               <th className="p-3">Estado</th>
-              <th className="p-3">Acciones</th>
+              <th className="p-3">Gestión</th>
             </tr>
           </thead>
           <tbody>
@@ -112,33 +115,33 @@ export default function PanelAprobaciones() {
                 <td className="p-3">{a.accion}</td>
                 <td className="p-3">{a.escuela}</td>
                 <td className="p-3">{a.puntaje}</td>
-                <td className="p-3 capitalize">
+                <td className="p-3 capitalize font-medium">
                   {a.estado === "pendiente" && (
                     <span className="text-yellow-600">Pendiente</span>
                   )}
                   {a.estado === "aprobada" && (
-                    <span className="text-green-600 font-medium">Aprobada</span>
+                    <span className="text-green-600">Aprobada</span>
                   )}
                   {a.estado === "rechazada" && (
-                    <span className="text-red-600 font-medium">Rechazada</span>
+                    <span className="text-red-600">Rechazada</span>
                   )}
                 </td>
-                <td className="p-3 space-x-2">
+                <td className="p-3">
                   {a.estado === "pendiente" ? (
-                    <>
+                    <div className="flex gap-2">
                       <button
                         onClick={() => actualizarAccion(a.id, "aprobada")}
-                        className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                        className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
                       >
                         Aprobar
                       </button>
                       <button
                         onClick={() => actualizarAccion(a.id, "rechazada")}
-                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
                       >
                         Rechazar
                       </button>
-                    </>
+                    </div>
                   ) : (
                     <span className="text-xs text-gray-400">Sin acciones</span>
                   )}

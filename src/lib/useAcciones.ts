@@ -19,20 +19,20 @@ export function useAcciones() {
     const { data, error } = await supabase
       .from("acciones")
       .select("*")
+      .eq("estado", "pendiente") // ✅ solo pendientes
       .order("fecha", { ascending: false });
 
-    if (data) {
-      setAcciones(data as Accion[]);
-    } else {
-      console.error("Error al obtener acciones:", error?.message);
-    }
+    if (data) setAcciones(data);
+    else console.error("Error al obtener acciones:", error?.message);
 
     setLoading(false);
   };
 
-  const agregarAccion = async (accion: Accion): Promise<boolean> => {
+  const agregarAccion = async (accion: Omit<Accion, "id" | "estado">) => {
     const supabase = createBrowserSupabaseClient();
-    const { error } = await supabase.from("acciones").insert([accion]);
+    const { error } = await supabase
+      .from("acciones")
+      .insert([{ ...accion, estado: "pendiente" }]);
 
     if (error) {
       console.error("Error al insertar acción:", error.message);
@@ -46,7 +46,7 @@ export function useAcciones() {
   const actualizarAccion = async (
     id: number,
     nuevoEstado: "pendiente" | "aprobada" | "rechazada"
-  ): Promise<boolean> => {
+  ) => {
     const supabase = createBrowserSupabaseClient();
     const { error } = await supabase
       .from("acciones")
@@ -58,15 +58,29 @@ export function useAcciones() {
       return false;
     }
 
-    await fetchAcciones();
+    return true; // No hace refetch
+  };
+
+  const eliminarAccion = async (id: number) => {
+    const supabase = createBrowserSupabaseClient();
+    const { error } = await supabase.from("acciones").delete().eq("id", id);
+
+    if (error) {
+      console.error("Error al eliminar acción:", error.message);
+      return false;
+    }
+
+    setAcciones((prev) => prev.filter((a) => a.id !== id));
     return true;
   };
 
   return {
     acciones,
+    setAcciones,
     loading,
     agregarAccion,
     actualizarAccion,
+    eliminarAccion,
     fetchAcciones,
   };
 }
