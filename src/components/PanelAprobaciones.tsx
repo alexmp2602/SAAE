@@ -12,7 +12,7 @@ const ACCION_OPCIONES = [
 ] as const;
 
 export default function PanelAprobaciones() {
-  const { acciones, actualizarEstado, loading, error } = useAcciones();
+  const { acciones, actualizarAccion, loading } = useAcciones();
   const [filtroAccion, setFiltroAccion] =
     useState<(typeof ACCION_OPCIONES)[number]>("Todas");
 
@@ -55,7 +55,6 @@ export default function PanelAprobaciones() {
   }, [accionesFiltradas]);
 
   if (loading) return <p className="p-4 text-gray-500">Cargando acciones...</p>;
-  if (error) return <p className="p-4 text-red-500">Error: {error}</p>;
 
   return (
     <section className="bg-white shadow rounded-md overflow-hidden">
@@ -94,59 +93,61 @@ export default function PanelAprobaciones() {
         </button>
       </header>
 
-      <table className="w-full table-auto text-sm">
-        <thead className="bg-gray-100 text-left font-medium text-gray-600">
-          <tr>
-            <th className="p-3">Docente</th>
-            <th className="p-3">Acción</th>
-            <th className="p-3">Escuela</th>
-            <th className="p-3">Puntaje</th>
-            <th className="p-3">Estado</th>
-            <th className="p-3">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {accionesFiltradas.map((a) => (
-            <tr key={a.id} className="border-t hover:bg-gray-50">
-              <td className="p-3">{a.docente}</td>
-              <td className="p-3">{a.accion}</td>
-              <td className="p-3">{a.escuela}</td>
-              <td className="p-3">{a.puntaje}</td>
-              <td className="p-3 capitalize">
-                {a.estado === "pendiente" && (
-                  <span className="text-yellow-600">Pendiente</span>
-                )}
-                {a.estado === "aprobada" && (
-                  <span className="text-green-600 font-medium">Aprobada</span>
-                )}
-                {a.estado === "rechazada" && (
-                  <span className="text-red-600 font-medium">Rechazada</span>
-                )}
-              </td>
-              <td className="p-3 space-x-2">
-                {a.estado === "pendiente" ? (
-                  <>
-                    <button
-                      onClick={() => actualizarEstado(a.id, "aprobada")}
-                      className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                    >
-                      Aprobar
-                    </button>
-                    <button
-                      onClick={() => actualizarEstado(a.id, "rechazada")}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      Rechazar
-                    </button>
-                  </>
-                ) : (
-                  <span className="text-xs text-gray-400">Sin acciones</span>
-                )}
-              </td>
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-[640px] w-full table-auto text-sm">
+          <thead className="bg-gray-100 text-left font-medium text-gray-600">
+            <tr>
+              <th className="p-3">Docente</th>
+              <th className="p-3">Acción</th>
+              <th className="p-3">Escuela</th>
+              <th className="p-3">Puntaje</th>
+              <th className="p-3">Estado</th>
+              <th className="p-3">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {accionesFiltradas.map((a) => (
+              <tr key={a.id} className="border-t hover:bg-gray-50">
+                <td className="p-3">{a.docente}</td>
+                <td className="p-3">{a.accion}</td>
+                <td className="p-3">{a.escuela}</td>
+                <td className="p-3">{a.puntaje}</td>
+                <td className="p-3 capitalize">
+                  {a.estado === "pendiente" && (
+                    <span className="text-yellow-600">Pendiente</span>
+                  )}
+                  {a.estado === "aprobada" && (
+                    <span className="text-green-600 font-medium">Aprobada</span>
+                  )}
+                  {a.estado === "rechazada" && (
+                    <span className="text-red-600 font-medium">Rechazada</span>
+                  )}
+                </td>
+                <td className="p-3 space-x-2">
+                  {a.estado === "pendiente" ? (
+                    <>
+                      <button
+                        onClick={() => actualizarAccion(a.id, "aprobada")}
+                        className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                      >
+                        Aprobar
+                      </button>
+                      <button
+                        onClick={() => actualizarAccion(a.id, "rechazada")}
+                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                      >
+                        Rechazar
+                      </button>
+                    </>
+                  ) : (
+                    <span className="text-xs text-gray-400">Sin acciones</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }

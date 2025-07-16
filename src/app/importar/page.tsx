@@ -1,14 +1,32 @@
 "use client";
 
+import { useState } from "react";
 import ArchivoImportador from "@/components/ArchivoImportador";
+import ComparadorAcciones from "@/components/ComparadorAcciones";
+import type { ParsedAccion } from "@/lib/types";
 
 export default function ImportarPage() {
+  const [accionesNuevas, setAccionesNuevas] = useState<ParsedAccion[]>([]);
+
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-4">
+    <main
+      className="max-w-5xl mx-auto px-6 pt-6 pb-12 space-y-10"
+      aria-label="Página de importación de acciones"
+    >
+      <h1 className="text-3xl font-semibold mb-4">
         Importar Acciones desde archivo
       </h1>
-      <ArchivoImportador />
-    </div>
+
+      <ArchivoImportador onProcesar={setAccionesNuevas} />
+
+      {accionesNuevas.length > 0 && (
+        <>
+          <h2 className="text-xl font-semibold text-gray-700">
+            Comparación con acciones existentes
+          </h2>
+          <ComparadorAcciones nuevas={accionesNuevas} />
+        </>
+      )}
+    </main>
   );
 }

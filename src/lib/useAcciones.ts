@@ -1,59 +1,48 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "./supabaseClient";
-
-export type Accion = {
-  id: number;
-  created_at: string;
-  docente: string;
-  accion: string;
-  escuela: string;
-  fecha: string;
-  puntaje: number;
-  estado: "pendiente" | "aprobada" | "rechazada";
-};
+import { supabase } from "@/lib/supabaseClient";
+import type { Accion } from "@/lib/types";
 
 export function useAcciones() {
   const [acciones, setAcciones] = useState<Accion[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // 🔁 Cargar todas las acciones al montar
   useEffect(() => {
     fetchAcciones();
   }, []);
 
-  async function fetchAcciones() {
+  const fetchAcciones = async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("acciones")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("fecha", { ascending: false });
 
-    if (error) {
-      console.error("Error al obtener acciones:", error.message);
-      setError(error.message);
-    } else {
+    if (data) {
       setAcciones(data as Accion[]);
-    }
-    setLoading(false);
-  }
-
-  async function agregarAccion(nueva: Omit<Accion, "id" | "created_at">) {
-    const { data, error } = await supabase.from("acciones").insert([nueva]);
-
-    if (error) {
-      console.error("Error al agregar acción:", error.message);
-      setError(error.message);
-      return false;
     } else {
-      fetchAcciones(); // refresca lista
-      return true;
+      console.error("Error al obtener acciones:", error?.message);
     }
-  }
 
-  async function actualizarEstado(id: number, nuevoEstado: Accion["estado"]) {
+    setLoading(false);
+  };
+
+  const agregarAccion = async (accion: Accion): Promise<boolean> => {
+    const { error } = await supabase.from("acciones").insert([accion]);
+    if (error) {
+      console.error("Error al insertar acción:", error.message);
+      return false;
+    }
+
+    await fetchAcciones();
+    return true;
+  };
+
+  const actualizarAccion = async (
+    id: number,
+    nuevoEstado: "pendiente" | "aprobada" | "rechazada"
+  ): Promise<boolean> => {
     const { error } = await supabase
       .from("acciones")
       .update({ estado: nuevoEstado })
@@ -61,20 +50,18 @@ export function useAcciones() {
 
     if (error) {
       console.error("Error al actualizar estado:", error.message);
-      setError(error.message);
       return false;
-    } else {
-      fetchAcciones(); // refresca lista
-      return true;
     }
-  }
+
+    await fetchAcciones();
+    return true;
+  };
 
   return {
     acciones,
     loading,
-    error,
-    fetchAcciones,
     agregarAccion,
-    actualizarEstado,
+    actualizarAccion,
+    fetchAcciones,
   };
 }

@@ -12,28 +12,67 @@ const navItems = [
   { href: "/aprobaciones", label: "Aprobaciones" },
 ];
 
-export default function Sidebar() {
+type SidebarProps = {
+  isOpen: boolean;
+  onClose: () => void;
+};
+
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-white border-r shadow-sm min-h-screen">
-      <div className="p-6 font-bold text-xl text-blue-700 flex items-center gap-2">
-        <Image src="/logo.png" alt="Logo" width={24} height={24} />
-        SAAE
-      </div>
-      <nav className="px-4">
-        {navItems.map(({ href, label }) => (
-          <Link key={href} href={href}>
-            <div
-              className={`p-3 my-2 rounded-md cursor-pointer hover:bg-blue-100 transition-colors ${
-                pathname === href ? "bg-blue-200 font-semibold" : ""
-              }`}
-            >
-              {label}
-            </div>
-          </Link>
-        ))}
-      </nav>
-    </aside>
+    <>
+      {/* Overlay en móvil */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-white/30 backdrop-blur-sm z-40 sm:hidden"
+          onClick={onClose}
+          aria-label="Cerrar menú"
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed sm:static z-50 sm:z-auto bg-white border-r shadow-sm w-64 h-full transform transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"
+        }`}
+        role="navigation"
+        aria-label="Navegación principal"
+      >
+        <Image
+          src="/logo.png"
+          alt="Logo SAAE"
+          width={150}
+          height={50}
+          className="m-4"
+          style={{ height: "auto", width: "auto" }}
+          priority
+        />
+
+        <nav className="px-4">
+          <ul className="space-y-1">
+            {navItems.map(({ href, label }) => {
+              const isActive = pathname === href;
+
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    onClick={onClose}
+                    className={`block p-3 rounded-md cursor-pointer transition-colors ${
+                      isActive
+                        ? "bg-blue-200 font-semibold border-l-4 border-blue-600 pl-2"
+                        : "hover:bg-blue-100 text-gray-800"
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </aside>
+    </>
   );
 }

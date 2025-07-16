@@ -1,85 +1,70 @@
-type Accion = {
-  docente: string;
-  escuela: string;
-  accion: string;
-  puntaje: number;
+"use client";
+
+import { useAcciones } from "@/lib/useAcciones";
+import type { ParsedAccion } from "@/lib/types";
+
+type Props = {
+  nuevas: ParsedAccion[];
 };
 
-const datosViejos: Accion[] = [
-  { docente: "María López", escuela: "Esc. 5", accion: "MAD", puntaje: 8.5 },
-  {
-    docente: "Javier Gómez",
-    escuela: "Esc. 3",
-    accion: "Acrecentamiento",
-    puntaje: 7.2,
-  },
-];
+export default function ComparadorAcciones({ nuevas }: Props) {
+  const { acciones: existentes } = useAcciones();
 
-const datosNuevos: Accion[] = [
-  { docente: "María López", escuela: "Esc. 5", accion: "MAD", puntaje: 9.1 }, // cambio
-  {
-    docente: "Javier Gómez",
-    escuela: "Esc. 3",
-    accion: "Acrecentamiento",
-    puntaje: 7.2,
-  }, // igual
-  {
-    docente: "Ana Torres",
-    escuela: "Esc. 9",
-    accion: "Servicio Provisorio",
-    puntaje: 6.0,
-  }, // nuevo
-];
+  const comparaciones = nuevas.map((nueva) => {
+    const coincidencia = existentes.find(
+      (v) =>
+        v.docente === nueva.docente &&
+        v.accion === nueva.accion &&
+        v.escuela === nueva.escuela &&
+        v.fecha === nueva.fecha
+    );
 
-function compararAcciones() {
-  return datosNuevos.map((nueva) => {
-    const vieja = datosViejos.find((v) => v.docente === nueva.docente);
-    return { nueva, vieja };
+    return {
+      nueva,
+      vieja: coincidencia,
+    };
   });
-}
-
-export default function ComparadorAcciones() {
-  const comparaciones = compararAcciones();
 
   return (
-    <div className="bg-white shadow rounded-md overflow-hidden">
-      <table className="w-full table-auto text-sm">
-        <thead className="bg-gray-100 text-left font-medium text-gray-600">
+    <div className="bg-white shadow rounded-md overflow-x-auto border">
+      <table className="min-w-full text-sm border-collapse">
+        <thead className="bg-gray-100 text-gray-700 font-medium">
           <tr>
-            <th className="p-3">Docente</th>
-            <th className="p-3">Escuela</th>
-            <th className="p-3">Acción</th>
-            <th className="p-3">Puntaje</th>
-            <th className="p-3">Diferencia</th>
+            <th className="px-4 py-3 text-left">Docente</th>
+            <th className="px-4 py-3 text-left">Escuela</th>
+            <th className="px-4 py-3 text-left">Acción</th>
+            <th className="px-4 py-3 text-left">Fecha</th>
+            <th className="px-4 py-3 text-left">Puntaje</th>
+            <th className="px-4 py-3 text-left">Estado</th>
           </tr>
         </thead>
         <tbody>
           {comparaciones.map(({ nueva, vieja }, idx) => {
-            const cambioPuntaje = vieja && nueva.puntaje !== vieja.puntaje;
             const esNuevo = !vieja;
+            const cambioPuntaje = vieja && nueva.puntaje !== vieja.puntaje;
+
+            let estado = "Sin cambios";
+            let color = "text-gray-600";
+            let bg = "";
+
+            if (esNuevo) {
+              estado = "🆕 Nueva acción";
+              color = "text-green-700";
+              bg = "bg-green-50";
+            } else if (cambioPuntaje) {
+              estado = `🔁 Puntaje cambiado: ${vieja.puntaje} → ${nueva.puntaje}`;
+              color = "text-yellow-700";
+              bg = "bg-yellow-50";
+            }
 
             return (
-              <tr
-                key={idx}
-                className={`border-t ${
-                  cambioPuntaje
-                    ? "bg-yellow-100"
-                    : esNuevo
-                    ? "bg-green-100"
-                    : ""
-                }`}
-              >
-                <td className="p-3">{nueva.docente}</td>
-                <td className="p-3">{nueva.escuela}</td>
-                <td className="p-3">{nueva.accion}</td>
-                <td className="p-3">{nueva.puntaje}</td>
-                <td className="p-3">
-                  {esNuevo
-                    ? "🆕 Nueva acción"
-                    : cambioPuntaje
-                    ? `Cambió de ${vieja?.puntaje} a ${nueva.puntaje}`
-                    : "Sin cambios"}
-                </td>
+              <tr key={idx} className={`border-t ${bg}`}>
+                <td className="px-4 py-2">{nueva.docente}</td>
+                <td className="px-4 py-2">{nueva.escuela}</td>
+                <td className="px-4 py-2">{nueva.accion}</td>
+                <td className="px-4 py-2">{nueva.fecha}</td>
+                <td className="px-4 py-2">{nueva.puntaje}</td>
+                <td className={`px-4 py-2 font-medium ${color}`}>{estado}</td>
               </tr>
             );
           })}

@@ -4,17 +4,13 @@ import { ChangeEvent, useState } from "react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { useAcciones } from "@/lib/useAcciones";
+import type { AccionSinID, ParsedAccion } from "@/lib/types";
 
-type ParsedAccion = {
-  docente: string;
-  accion: string;
-  escuela: string;
-  fecha: string;
-  puntaje: number;
-  duplicado: boolean;
-};
-
-export default function ArchivoImportador() {
+export default function ArchivoImportador({
+  onProcesar,
+}: {
+  onProcesar: (acciones: ParsedAccion[]) => void;
+}) {
   const { acciones: accionesExistentes, agregarAccion } = useAcciones();
   const [acciones, setAcciones] = useState<ParsedAccion[]>([]);
   const [mensaje, setMensaje] = useState("");
@@ -45,8 +41,9 @@ export default function ArchivoImportador() {
       });
 
       setAcciones(transformados);
+      onProcesar(transformados); // enviar al padre
       setMensaje(
-        `Se detectaron ${
+        `✅ Se detectaron ${
           transformados.filter((a) => !a.duplicado).length
         } nuevas acciones.`
       );
@@ -92,10 +89,23 @@ export default function ArchivoImportador() {
     let exitos = 0;
 
     for (const a of nuevas) {
-      const ok = await agregarAccion({
-        ...a,
+      const accionSinID: AccionSinID = {
+        docente: a.docente,
+        accion: a.accion,
+        escuela: a.escuela,
+        fecha: a.fecha,
+        puntaje: a.puntaje,
         estado: "pendiente",
-      });
+      };
+
+      // Proveer valores dummy para id y created_at para cumplir con el tipo Accion
+      const accionCompleta = {
+        ...accionSinID,
+        id: 0, // El ID será generado por la base de datos
+        created_at: new Date().toISOString(),
+      };
+
+      const ok = await agregarAccion(accionCompleta);
       if (ok) exitos++;
     }
 
@@ -110,16 +120,40 @@ export default function ArchivoImportador() {
   return (
     <div className="bg-white rounded-lg shadow-md p-6 space-y-6 border border-gray-200">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Subí un archivo{" "}
-          <span className="text-gray-500 text-xs">(CSV o Excel)</span>
+        <label
+          htmlFor="file-upload"
+          className="relative cursor-pointer w-full flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 text-gray-600 hover:border-blue-400 hover:bg-blue-50 transition"
+        >
+          <svg
+            className="w-10 h-10 mb-2 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3 15a4 4 0 01.88-7.91A4.5 4.5 0 0112 6v0a4.5 4.5 0 013.12 1.09A4 4 0 1121 15h-1"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 12v9m0 0l-3-3m3 3l3-3"
+            />
+          </svg>
+          <span className="text-sm">
+            Arrastrá un archivo o hacé clic para subir
+          </span>
+          <span className="text-xs text-gray-400">(Formato .csv o .xlsx)</span>
+          <input
+            id="file-upload"
+            type="file"
+            accept=".csv, .xlsx"
+            onChange={handleFileUpload}
+            className="absolute inset-0 opacity-0 cursor-pointer"
+          />
         </label>
-        <input
-          type="file"
-          accept=".csv, .xlsx"
-          onChange={handleFileUpload}
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
       </div>
 
       {acciones.length > 0 && (
