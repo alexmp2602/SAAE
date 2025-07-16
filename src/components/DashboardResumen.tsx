@@ -1,17 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-
-type Accion = {
-  id: number;
-  docente: string;
-  accion: string;
-  escuela: string;
-  puntaje: number;
-  estado: "pendiente" | "aprobada" | "rechazada";
-};
-
-const ACCIONES_KEY = "acciones-aprobaciones";
+import { useMemo } from "react";
+import { useAcciones } from "@/lib/useAcciones";
 
 const CardResumen = ({
   label,
@@ -34,14 +24,7 @@ const CardResumen = ({
 );
 
 export default function DashboardResumen() {
-  const [acciones, setAcciones] = useState<Accion[]>([]);
-
-  useEffect(() => {
-    const datosGuardados = localStorage.getItem(ACCIONES_KEY);
-    if (datosGuardados) {
-      setAcciones(JSON.parse(datosGuardados));
-    }
-  }, []);
+  const { acciones } = useAcciones(); // ✅ se conecta a Supabase
 
   const resumen = useMemo(() => {
     return {

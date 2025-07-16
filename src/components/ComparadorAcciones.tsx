@@ -1,15 +1,13 @@
 "use client";
 
-import { useAcciones } from "@/lib/useAcciones";
-import type { ParsedAccion } from "@/lib/types";
+import type { AccionSinID, ParsedAccion } from "@/lib/types";
 
 type Props = {
-  nuevas: ParsedAccion[];
+  nuevas: AccionSinID[];
+  existentes: ParsedAccion[];
 };
 
-export default function ComparadorAcciones({ nuevas }: Props) {
-  const { acciones: existentes } = useAcciones();
-
+export default function ComparadorAcciones({ nuevas, existentes }: Props) {
   const comparaciones = nuevas.map((nueva) => {
     const coincidencia = existentes.find(
       (v) =>

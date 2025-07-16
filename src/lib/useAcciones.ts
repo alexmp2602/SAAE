@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
 import type { Accion } from "@/lib/types";
+import { createBrowserSupabaseClient } from "@/lib/supabaseBrowserClient";
 
 export function useAcciones() {
   const [acciones, setAcciones] = useState<Accion[]>([]);
@@ -14,6 +14,8 @@ export function useAcciones() {
 
   const fetchAcciones = async () => {
     setLoading(true);
+    const supabase = createBrowserSupabaseClient();
+
     const { data, error } = await supabase
       .from("acciones")
       .select("*")
@@ -29,7 +31,9 @@ export function useAcciones() {
   };
 
   const agregarAccion = async (accion: Accion): Promise<boolean> => {
+    const supabase = createBrowserSupabaseClient();
     const { error } = await supabase.from("acciones").insert([accion]);
+
     if (error) {
       console.error("Error al insertar acción:", error.message);
       return false;
@@ -43,6 +47,7 @@ export function useAcciones() {
     id: number,
     nuevoEstado: "pendiente" | "aprobada" | "rechazada"
   ): Promise<boolean> => {
+    const supabase = createBrowserSupabaseClient();
     const { error } = await supabase
       .from("acciones")
       .update({ estado: nuevoEstado })
