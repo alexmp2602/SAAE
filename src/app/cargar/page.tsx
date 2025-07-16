@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState } from "react";
 import { useAcciones } from "@/lib/useAcciones";
 import { PlusIcon } from "@heroicons/react/24/solid";
