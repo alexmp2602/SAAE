@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState } from "react";
 import ArchivoImportador from "@/components/ArchivoImportador";
 import ComparadorAcciones from "@/components/ComparadorAcciones";
