@@ -6,10 +6,16 @@ export default function HomePage() {
       className="container mx-auto px-6 pt-8 pb-16"
       aria-label="Resumen general del sistema"
     >
-      <section>
-        <h1 className="text-3xl font-bold tracking-tight mb-6">
-          Resumen General
-        </h1>
+      <section aria-labelledby="resumen-heading" className="space-y-6">
+        <header>
+          <h1
+            id="resumen-heading"
+            className="text-3xl font-bold tracking-tight"
+          >
+            Resumen General del Sistema
+          </h1>
+        </header>
+
         <DashboardResumen />
       </section>
     </main>

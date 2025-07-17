@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useAcciones } from "@/lib/useAcciones";
 import { CheckCircle, XCircle, Clock, FileText } from "lucide-react";
+import { motion } from "motion/react";
 
 type CardVariant = "default" | "warning" | "success" | "error";
 
@@ -32,7 +33,7 @@ const variantStyles: Record<
   },
 };
 
-const CardResumen = ({
+function CardResumen({
   label,
   value,
   variant = "default",
@@ -40,22 +41,31 @@ const CardResumen = ({
   label: string;
   value: number;
   variant?: CardVariant;
-}) => {
+}) {
   const { bg, text, Icon } = variantStyles[variant];
 
   return (
-    <div
+    <motion.article
       className={`rounded-lg shadow p-4 ${bg}`}
-      aria-label={`${label}: ${value}`}
+      role="status"
+      aria-labelledby={`resumen-${label.toLowerCase().replace(/\s/g, "-")}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-base font-medium">{label}</p>
-        <Icon className={`w-5 h-5 ${text}`} />
+      <div className="flex justify-between items-start mb-1">
+        <h3
+          id={`resumen-${label.toLowerCase().replace(/\s/g, "-")}`}
+          className={`text-base font-medium ${text}`}
+        >
+          {label}
+        </h3>
+        <Icon className={`w-5 h-5 ${text}`} aria-hidden="true" />
       </div>
       <p className={`text-2xl font-bold ${text}`}>{value}</p>
-    </div>
+    </motion.article>
   );
-};
+}
 
 export default function DashboardResumen() {
   const { acciones } = useAcciones();
@@ -71,7 +81,7 @@ export default function DashboardResumen() {
 
   return (
     <section
-      className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+      className="grid gap-y-6 gap-x-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
       aria-labelledby="resumen-acciones"
       role="region"
     >

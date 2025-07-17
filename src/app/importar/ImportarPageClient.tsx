@@ -1,9 +1,8 @@
-// src/components/ImportarPageClient.tsx
 "use client";
 
 import { useState } from "react";
 import ArchivoImportador from "./ArchivoImportador";
-import ComparadorAcciones from "../../components/ComparadorAcciones";
+import ComparadorAcciones from "./ComparadorAcciones";
 import type { AccionSinID, ParsedAccion } from "@/lib/types";
 
 type Props = {
@@ -13,15 +12,24 @@ type Props = {
 export default function ImportarPageClient({ accionesExistentes }: Props) {
   const [nuevasAcciones, setNuevasAcciones] = useState<AccionSinID[]>([]);
 
-  const manejarImportacion = (nuevas: AccionSinID[]) => {
-    setNuevasAcciones(nuevas);
+  const manejarImportacion = (acciones: AccionSinID[]) => {
+    setNuevasAcciones(acciones);
   };
 
   return (
-    <main className="max-w-5xl mx-auto px-6 pt-6 pb-12 space-y-10">
-      <h1 className="text-3xl font-semibold mb-4">
-        Importar Acciones desde archivo
-      </h1>
+    <main
+      className="max-w-5xl mx-auto px-6 pt-6 pb-12 space-y-10"
+      role="main"
+      aria-labelledby="importar-titulo"
+    >
+      <header>
+        <h1
+          id="importar-titulo"
+          className="text-3xl font-semibold mb-4 text-gray-900"
+        >
+          Importar acciones desde archivo
+        </h1>
+      </header>
 
       <ArchivoImportador
         accionesExistentes={accionesExistentes}
@@ -29,12 +37,19 @@ export default function ImportarPageClient({ accionesExistentes }: Props) {
       />
 
       {nuevasAcciones.length > 0 && (
-        <>
-          <div className="text-sm text-green-700 font-medium">
+        <section aria-labelledby="nuevas-acciones">
+          <div
+            className="text-sm text-green-700 font-medium"
+            role="status"
+            aria-live="polite"
+          >
             {nuevasAcciones.length} acciones nuevas importadas con éxito.
           </div>
 
-          <h2 className="text-xl font-semibold text-gray-700 mt-6">
+          <h2
+            id="nuevas-acciones"
+            className="text-xl font-semibold text-gray-700 mt-6"
+          >
             Comparación con acciones existentes
           </h2>
 
@@ -42,7 +57,7 @@ export default function ImportarPageClient({ accionesExistentes }: Props) {
             nuevas={nuevasAcciones}
             existentes={accionesExistentes}
           />
-        </>
+        </section>
       )}
     </main>
   );

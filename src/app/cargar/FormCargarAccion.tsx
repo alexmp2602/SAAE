@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 type FormData = {
   docente: string;
@@ -25,30 +26,35 @@ export default function FormCargarAccion({
   onChange,
   onSubmit,
 }: Props) {
+  const [enviando, setEnviando] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    setEnviando(true);
+    await onSubmit(e);
+    setTimeout(() => setEnviando(false), 300); // para UX aunque sea instantáneo
+  };
+
+  const colorMensaje = mensaje.startsWith("✅")
+    ? "bg-green-100 text-green-800"
+    : mensaje.startsWith("⚠️")
+    ? "bg-yellow-100 text-yellow-800"
+    : "bg-red-100 text-red-700";
+
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       aria-label="Formulario de carga de acción estatutaria"
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-white p-6 rounded-md shadow border max-w-7xl mx-auto"
     >
-      {/* Docente */}
-      <div>
-        <label htmlFor="docente" className="form-label">
-          Nombre del docente
-        </label>
-        <input
-          type="text"
-          id="docente"
-          name="docente"
-          value={form.docente}
-          onChange={onChange}
-          placeholder="Ej. María González"
-          className="form-input"
-          required
-        />
-      </div>
+      <FormInput
+        id="docente"
+        label="Nombre del docente"
+        placeholder="Ej. María González"
+        value={form.docente}
+        onChange={onChange}
+        required
+      />
 
-      {/* Acción */}
       <div>
         <label htmlFor="accion" className="form-label">
           Acción estatutaria
@@ -69,80 +75,107 @@ export default function FormCargarAccion({
         </select>
       </div>
 
-      {/* Escuela */}
-      <div>
-        <label htmlFor="escuela" className="form-label">
-          Escuela
-        </label>
-        <input
-          type="text"
-          id="escuela"
-          name="escuela"
-          value={form.escuela}
-          onChange={onChange}
-          placeholder="Ej. EP N°12 - Mercedes"
-          className="form-input"
-          required
-        />
-      </div>
+      <FormInput
+        id="escuela"
+        label="Escuela"
+        placeholder="Ej. EP N°12 - Mercedes"
+        value={form.escuela}
+        onChange={onChange}
+        required
+      />
 
-      {/* Fecha */}
-      <div>
-        <label htmlFor="fecha" className="form-label">
-          Fecha
-        </label>
-        <input
-          type="date"
-          id="fecha"
-          name="fecha"
-          value={form.fecha}
-          onChange={onChange}
-          className="form-input"
-          required
-        />
-      </div>
+      <FormInput
+        id="fecha"
+        label="Fecha"
+        type="date"
+        value={form.fecha}
+        onChange={onChange}
+        required
+      />
 
-      {/* Puntaje */}
-      <div>
-        <label htmlFor="puntaje" className="form-label">
-          Puntaje
-        </label>
-        <input
-          type="number"
-          step="0.1"
-          id="puntaje"
-          name="puntaje"
-          value={form.puntaje}
-          onChange={onChange}
-          placeholder="Ej. 12.5"
-          className="form-input"
-          required
-        />
-      </div>
+      <FormInput
+        id="puntaje"
+        label="Puntaje"
+        type="number"
+        step="0.1"
+        placeholder="Ej. 12.5"
+        value={form.puntaje}
+        onChange={onChange}
+        required
+      />
 
       {/* Botón + Mensaje */}
       <div className="lg:col-span-3 md:col-span-2 flex flex-wrap items-center gap-4 mt-2">
         <button
           type="submit"
-          className="bg-blue-600 text-white px-5 py-2.5 rounded hover:bg-blue-700 transition-colors"
+          disabled={enviando}
+          className={`px-5 py-2.5 rounded text-white transition-colors ${
+            enviando
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
         >
-          Guardar acción
+          {enviando ? "Guardando..." : "Guardar acción"}
         </button>
 
-        {mensaje && (
-          <p
-            className={`text-sm px-4 py-2 rounded ${
-              mensaje.startsWith("✅")
-                ? "bg-green-100 text-green-800"
-                : mensaje.startsWith("⚠️")
-                ? "bg-yellow-100 text-yellow-800"
-                : "bg-red-100 text-red-700"
-            }`}
-          >
-            {mensaje}
-          </p>
-        )}
+        <AnimatePresence>
+          {mensaje && (
+            <motion.p
+              key="mensaje"
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 5 }}
+              transition={{ duration: 0.3 }}
+              className={`text-sm px-4 py-2 rounded ${colorMensaje}`}
+              role="alert"
+              aria-live="polite"
+            >
+              {mensaje}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
     </form>
+  );
+}
+
+type FormInputProps = {
+  id: string;
+  label: string;
+  placeholder?: string;
+  type?: string;
+  step?: string;
+  value: string | number;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  required?: boolean;
+};
+
+function FormInput({
+  id,
+  label,
+  placeholder,
+  type = "text",
+  step,
+  value,
+  onChange,
+  required,
+}: FormInputProps) {
+  return (
+    <div>
+      <label htmlFor={id} className="form-label">
+        {label}
+      </label>
+      <input
+        id={id}
+        name={id}
+        type={type}
+        step={step}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className="form-input"
+        required={required}
+      />
+    </div>
   );
 }

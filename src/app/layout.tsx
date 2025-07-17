@@ -1,7 +1,7 @@
 // src/app/layout.tsx
 import "@/styles/globals.css";
 import { Geist } from "next/font/google";
-import AppLayout from "@/components/AppLayout"; // cliente
+import AppLayout from "@/app/AppLayout";
 import type { Metadata } from "next";
 
 const geist = Geist({
@@ -12,9 +12,42 @@ const geist = Geist({
 
 export const metadata: Metadata = {
   title: "SAAE - Sistema de Administración de Acciones Estatutarias",
-  description: "Gestión de acciones estatutarias para Región 10",
+  description:
+    "Sistema moderno para la gestión de acciones estatutarias docentes en la Región 10 de la Provincia de Buenos Aires.",
+  metadataBase: new URL("https://saae-sist.vercel.app"),
+  openGraph: {
+    title: "SAAE - Sistema de Administración de Acciones Estatutarias",
+    description:
+      "Gestión y organización de acciones docentes como MAD, Traslados y Servicios Provisorios en Región 10.",
+    url: "https://saae-sist.vercel.app",
+    siteName: "SAAE",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "SAAE - Gestión de Acciones Docentes",
+      },
+    ],
+    locale: "es_AR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SAAE - Sistema de Administración de Acciones Estatutarias",
+    description:
+      "Gestión y organización de acciones docentes como MAD, Traslados y Servicios Provisorios en Región 10.",
+    images: ["/og.png"],
+    creator: "@saae_app",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+  },
 };
 
+// ✅ Te falta esto:
 export default function RootLayout({
   children,
 }: {

@@ -5,8 +5,9 @@ import FormCargarAccion from "@/app/cargar/FormCargarAccion";
 import ListaRecientes from "@/app/cargar/ListaRecientes";
 import { useAcciones } from "@/lib/useAcciones";
 import type { Accion } from "@/lib/types";
+import { motion, AnimatePresence } from "motion/react";
 
-const formInicial = {
+const formInicial: Omit<Accion, "id" | "estado"> = {
   docente: "",
   accion: "",
   escuela: "",
@@ -16,10 +17,9 @@ const formInicial = {
 };
 
 export default function CargarAccionPage() {
-  const { acciones, agregarAccion, eliminarAccion } =
-    useAcciones();
+  const { acciones, agregarAccion, eliminarAccion } = useAcciones();
 
-  const [form, setForm] = useState<Omit<Accion, "id" | "estado">>(formInicial);
+  const [form, setForm] = useState(formInicial);
   const [mensaje, setMensaje] = useState("");
   const [editandoId, setEditandoId] = useState<number | null>(null);
 
@@ -33,16 +33,24 @@ export default function CargarAccionPage() {
     }));
   };
 
+  const mostrarMensaje = (texto: string, tiempo = 3000) => {
+    setMensaje(texto);
+    setTimeout(() => setMensaje(""), tiempo);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.docente || !form.accion || !form.escuela || !form.fecha) {
-      setMensaje("⚠️ Por favor, completá todos los campos.");
+    const camposIncompletos =
+      !form.docente || !form.accion || !form.escuela || !form.fecha;
+
+    if (camposIncompletos) {
+      mostrarMensaje("⚠️ Por favor, completá todos los campos.");
       return;
     }
 
     if (isNaN(form.puntaje) || form.puntaje < 0) {
-      setMensaje("❌ El puntaje debe ser un número válido.");
+      mostrarMensaje("❌ El puntaje debe ser un número válido.");
       return;
     }
 
@@ -54,17 +62,15 @@ export default function CargarAccionPage() {
     let exito = false;
 
     if (editandoId) {
-      // Actualizar acción existente
       exito = await eliminarAccion(editandoId);
       if (exito) {
         exito = await agregarAccion(accionAGuardar);
       }
     } else {
-      // Nueva acción
       exito = await agregarAccion(accionAGuardar);
     }
 
-    setMensaje(
+    mostrarMensaje(
       exito
         ? `✅ Acción ${editandoId ? "actualizada" : "cargada"} con éxito`
         : "❌ Hubo un error al guardar la acción"
@@ -78,17 +84,15 @@ export default function CargarAccionPage() {
     const { id, ...resto } = accion;
     setForm(resto);
     setEditandoId(id);
-    setMensaje("✏️ Editando acción existente");
+    mostrarMensaje("✏️ Editando acción existente");
   };
 
   const handleEliminar = async (id: number) => {
-    const confirmado = confirm(
-      "¿Estás seguro de que querés eliminar esta acción?"
-    );
-    if (!confirmado) return;
+    if (!confirm("¿Estás seguro de que querés eliminar esta acción?")) return;
 
     const exito = await eliminarAccion(id);
-    setMensaje(
+
+    mostrarMensaje(
       exito
         ? "🗑️ Acción eliminada correctamente"
         : "❌ Hubo un error al eliminar la acción"
@@ -101,23 +105,57 @@ export default function CargarAccionPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-6 text-gray-800">
+    <div className="p-6 max-w-7xl mx-auto space-y-6" role="main">
+      <motion.h1
+        className="text-2xl font-semibold text-gray-800"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
         {editandoId ? "Editar acción" : "Cargar nueva acción"}
-      </h1>
+      </motion.h1>
 
-      <FormCargarAccion
-        form={form}
-        mensaje={mensaje}
-        onChange={handleChange}
-        onSubmit={handleSubmit}
-      />
+      <motion.section
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <FormCargarAccion
+          form={form}
+          mensaje={mensaje}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+        />
 
-      <ListaRecientes
-        acciones={acciones}
-        onEditar={handleEditar}
-        onEliminar={handleEliminar}
-      />
+        <AnimatePresence>
+          {mensaje && (
+            <motion.div
+              key="mensaje"
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 5 }}
+              transition={{ duration: 0.25 }}
+              className="mt-2 text-sm font-medium text-gray-700"
+              role="alert"
+              aria-live="polite"
+            >
+              {mensaje}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.section>
+
+      <motion.section
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <ListaRecientes
+          acciones={acciones}
+          onEditar={handleEditar}
+          onEliminar={handleEliminar}
+        />
+      </motion.section>
     </div>
   );
 }

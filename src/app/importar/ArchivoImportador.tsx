@@ -6,6 +6,8 @@ import * as XLSX from "xlsx";
 import { UploadCloud, CheckCircle, XCircle } from "lucide-react";
 import { createBrowserSupabaseClient } from "@/lib/supabaseBrowserClient";
 import type { AccionSinID, ParsedAccion } from "@/lib/types";
+import { motion } from "motion/react";
+import { AnimatePresence } from "motion/react"
 
 type Props = {
   accionesExistentes: ParsedAccion[];
@@ -144,30 +146,34 @@ export default function ArchivoImportador({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 space-y-6 border border-gray-200">
+    <div
+      className="bg-white rounded-lg shadow-md p-6 space-y-6 border border-gray-200"
+      role="region"
+      aria-labelledby="importar-archivo"
+    >
+      <h2 id="importar-archivo" className="text-xl font-semibold text-gray-800">
+        Subir archivo de acciones
+      </h2>
+
       <div className="space-y-2">
         <label
           htmlFor="file-upload"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md px-6 py-8 cursor-pointer transition-colors
-            ${
-              isDragging
-                ? "bg-blue-50 border-blue-400"
-                : "bg-gray-50 border-gray-300 hover:bg-gray-100"
-            }
-          `}
+          className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md px-6 py-8 cursor-pointer transition-colors focus:outline-none focus:ring-2 ${
+            isDragging
+              ? "bg-blue-50 border-blue-400 ring-blue-300"
+              : "bg-gray-50 border-gray-300 hover:bg-gray-100"
+          }`}
         >
           <UploadCloud className="w-8 h-8 mb-2 text-blue-600" />
           <p className="text-sm text-gray-700 font-medium">
-            Arrastrá un archivo aquí o{" "}
-            <span className="text-blue-600 underline">
-              hacé clic para subir
-            </span>
+            Arrastrá un archivo o{" "}
+            <span className="text-blue-600 underline">hacé clic</span>
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            Formatos aceptados: .csv o .xlsx
+            Formatos aceptados: <code>.csv</code> o <code>.xlsx</code>
           </p>
         </label>
 
@@ -177,7 +183,6 @@ export default function ArchivoImportador({
           accept=".csv, .xlsx"
           onChange={handleFileUpload}
           className="hidden"
-          aria-label="Cargar archivo de acciones"
         />
 
         {fileName && (
@@ -189,9 +194,23 @@ export default function ArchivoImportador({
       </div>
 
       {acciones.length > 0 && (
-        <div className="space-y-4">
+        <motion.section
+          className="space-y-4"
+          aria-labelledby="tabla-previa"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        >
+          <h3 id="tabla-previa" className="text-lg font-medium text-gray-800">
+            Acciones detectadas
+          </h3>
+
           <div className="overflow-x-auto border rounded-md">
-            <table className="min-w-full text-sm text-gray-800">
+            <table
+              className="min-w-full text-sm text-gray-800"
+              role="table"
+              aria-label="Tabla con acciones importadas"
+            >
               <thead className="bg-gray-100 border-b text-left">
                 <tr>
                   <th className="px-4 py-2">Docente</th>
@@ -199,16 +218,18 @@ export default function ArchivoImportador({
                   <th className="px-4 py-2">Escuela</th>
                   <th className="px-4 py-2">Fecha</th>
                   <th className="px-4 py-2">Puntaje</th>
-                  <th className="px-4 py-2">¿Duplicado?</th>
+                  <th className="px-4 py-2">Duplicado</th>
                 </tr>
               </thead>
               <tbody>
                 {acciones.map((a, idx) => (
                   <tr
                     key={idx}
-                    className={
-                      a.duplicado ? "bg-red-50 text-red-700" : "bg-white"
-                    }
+                    className={`${
+                      a.duplicado
+                        ? "bg-red-50 text-red-700"
+                        : "bg-white hover:bg-gray-50"
+                    }`}
                   >
                     <td className="px-4 py-2">{a.docente}</td>
                     <td className="px-4 py-2">{a.accion}</td>
@@ -216,17 +237,19 @@ export default function ArchivoImportador({
                     <td className="px-4 py-2">{a.fecha}</td>
                     <td className="px-4 py-2">{a.puntaje}</td>
                     <td className="px-4 py-2">
-                      {a.duplicado ? (
-                        <span className="inline-flex items-center gap-1">
-                          <XCircle className="w-4 h-4" />
-                          Sí
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-green-700">
-                          <CheckCircle className="w-4 h-4" />
-                          No
-                        </span>
-                      )}
+                      <span className="inline-flex items-center gap-1">
+                        {a.duplicado ? (
+                          <>
+                            <XCircle className="w-4 h-4 text-red-500" />
+                            <span className="sr-only">Duplicado</span>Sí
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                            <span className="sr-only">No duplicado</span>No
+                          </>
+                        )}
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -242,21 +265,29 @@ export default function ArchivoImportador({
               Importar nuevas acciones
             </button>
           </div>
-        </div>
+        </motion.section>
       )}
 
-      {mensaje && (
-        <div
-          role="status"
-          className={`text-sm px-4 py-2 rounded font-medium ${
-            mensaje.startsWith("✅")
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-700"
-          }`}
-        >
-          {mensaje}
-        </div>
-      )}
+      <AnimatePresence>
+        {mensaje && (
+          <motion.div
+            key="mensaje"
+            role="status"
+            className={`text-sm px-4 py-2 rounded font-medium ${
+              mensaje.startsWith("✅")
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-700"
+            }`}
+            aria-live="polite"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+          >
+            {mensaje}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
