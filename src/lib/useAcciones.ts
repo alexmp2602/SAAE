@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Accion } from "@/lib/types";
+import type { AccionConEscuela, EstadoAccion, AccionSinID } from "@/lib/types";
 import { createBrowserSupabaseClient } from "@/lib/supabaseBrowserClient";
 
 export function useAcciones() {
-  const [acciones, setAcciones] = useState<Accion[]>([]);
+  const [acciones, setAcciones] = useState<AccionConEscuela[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,18 +18,19 @@ export function useAcciones() {
 
     const { data, error } = await supabase
       .from("acciones")
-      .select("*")
-      .eq("estado", "pendiente") // ✅ solo pendientes
+      .select("*, escuelas(*)")
+      .eq("estado", "pendiente")
       .order("fecha", { ascending: false });
 
-    if (data) setAcciones(data);
+    if (data) setAcciones(data as AccionConEscuela[]);
     else console.error("Error al obtener acciones:", error?.message);
 
     setLoading(false);
   };
 
-  const agregarAccion = async (accion: Omit<Accion, "id" | "estado">) => {
+  const agregarAccion = async (accion: AccionSinID) => {
     const supabase = createBrowserSupabaseClient();
+
     const { error } = await supabase
       .from("acciones")
       .insert([{ ...accion, estado: "pendiente" }]);
@@ -43,11 +44,9 @@ export function useAcciones() {
     return true;
   };
 
-  const actualizarAccion = async (
-    id: number,
-    nuevoEstado: "pendiente" | "aprobada" | "rechazada"
-  ) => {
+  const actualizarAccion = async (id: number, nuevoEstado: EstadoAccion) => {
     const supabase = createBrowserSupabaseClient();
+
     const { error } = await supabase
       .from("acciones")
       .update({ estado: nuevoEstado })
@@ -58,11 +57,12 @@ export function useAcciones() {
       return false;
     }
 
-    return true; // No hace refetch
+    return true;
   };
 
   const eliminarAccion = async (id: number) => {
     const supabase = createBrowserSupabaseClient();
+
     const { error } = await supabase.from("acciones").delete().eq("id", id);
 
     if (error) {

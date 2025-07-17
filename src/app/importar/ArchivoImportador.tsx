@@ -5,13 +5,14 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { UploadCloud, CheckCircle, XCircle } from "lucide-react";
 import { createBrowserSupabaseClient } from "@/lib/supabaseBrowserClient";
-import type { AccionSinID, ParsedAccion } from "@/lib/types";
+import type { AccionAInsertar, ParsedAccion } from "@/lib/types";
+
 import { motion } from "motion/react";
-import { AnimatePresence } from "motion/react"
+import { AnimatePresence } from "motion/react";
 
 type Props = {
   accionesExistentes: ParsedAccion[];
-  onImportar: (nuevas: AccionSinID[]) => void;
+  onImportar: (nuevas: AccionAInsertar[]) => void;
 };
 
 export default function ArchivoImportador({
@@ -111,20 +112,46 @@ export default function ArchivoImportador({
   };
 
   const importarAcciones = async () => {
-    const nuevas = acciones
-      .filter((a) => !a.duplicado)
-      .map(
-        (a): AccionSinID => ({
-          docente: a.docente,
-          accion: a.accion,
-          escuela: a.escuela,
-          fecha: a.fecha,
-          puntaje: a.puntaje,
-          estado: "pendiente",
-        })
+    const supabase = createBrowserSupabaseClient();
+
+    // Obtener escuelas disponibles
+    const { data: escuelas, error: errorEscuelas } = await supabase
+      .from("escuelas")
+      .select("id, nombre");
+
+    if (errorEscuelas || !escuelas) {
+      setMensaje("❌ No se pudo obtener la lista de escuelas.");
+      return;
+    }
+
+    const nuevas: AccionAInsertar[] = [];
+
+    for (const accion of acciones.filter((a) => !a.duplicado)) {
+      const escuela = escuelas.find(
+        (e) =>
+          e.nombre.trim().toLowerCase() === accion.escuela.trim().toLowerCase()
       );
 
-    const supabase = createBrowserSupabaseClient();
+      if (!escuela) {
+        console.warn("Escuela no encontrada:", accion.escuela);
+        continue; // omitimos acciones con escuela no encontrada
+      }
+
+      nuevas.push({
+        docente: accion.docente,
+        accion: accion.accion,
+        escuela_id: escuela.id,
+        fecha: accion.fecha,
+        puntaje: accion.puntaje,
+        estado: "pendiente",
+      });
+    }
+
+    if (nuevas.length === 0) {
+      setMensaje("❌ No se encontraron acciones válidas para importar.");
+      return;
+    }
+
     const { data, error } = await supabase
       .from("acciones")
       .insert(nuevas)
@@ -138,7 +165,7 @@ export default function ArchivoImportador({
     setMensaje(
       `✅ Se importaron ${data?.length || nuevas.length} nuevas acciones. ${
         acciones.length - nuevas.length
-      } duplicadas fueron ignoradas.`
+      } fueron omitidas.`
     );
 
     setAcciones([]);

@@ -4,22 +4,21 @@ import { useState } from "react";
 import FormCargarAccion from "@/app/cargar/FormCargarAccion";
 import ListaRecientes from "@/app/cargar/ListaRecientes";
 import { useAcciones } from "@/lib/useAcciones";
-import type { Accion } from "@/lib/types";
+import type { AccionConEscuela, AccionForm } from "@/lib/types";
 import { motion, AnimatePresence } from "motion/react";
 
-const formInicial: Omit<Accion, "id" | "estado"> = {
+const formInicial: AccionForm = {
   docente: "",
   accion: "",
   escuela: "",
+  escuela_id: "",
   fecha: "",
   puntaje: 0,
-  created_at: new Date().toISOString(),
 };
 
 export default function CargarAccionPage() {
   const { acciones, agregarAccion, eliminarAccion } = useAcciones();
-
-  const [form, setForm] = useState(formInicial);
+  const [form, setForm] = useState<AccionForm>(formInicial);
   const [mensaje, setMensaje] = useState("");
   const [editandoId, setEditandoId] = useState<number | null>(null);
 
@@ -42,7 +41,7 @@ export default function CargarAccionPage() {
     e.preventDefault();
 
     const camposIncompletos =
-      !form.docente || !form.accion || !form.escuela || !form.fecha;
+      !form.docente || !form.accion || !form.escuela_id || !form.fecha;
 
     if (camposIncompletos) {
       mostrarMensaje("⚠️ Por favor, completá todos los campos.");
@@ -55,8 +54,11 @@ export default function CargarAccionPage() {
     }
 
     const accionAGuardar = {
-      ...form,
-      created_at: new Date().toISOString(),
+      docente: form.docente,
+      accion: form.accion,
+      escuela_id: form.escuela_id ?? "",
+      fecha: form.fecha,
+      puntaje: form.puntaje,
     };
 
     let exito = false;
@@ -80,10 +82,16 @@ export default function CargarAccionPage() {
     setEditandoId(null);
   };
 
-  const handleEditar = (accion: Accion) => {
-    const { id, ...resto } = accion;
-    setForm(resto);
-    setEditandoId(id);
+  const handleEditar = (accion: AccionConEscuela) => {
+    setForm({
+      docente: accion.docente,
+      accion: accion.accion,
+      fecha: accion.fecha,
+      puntaje: accion.puntaje,
+      escuela: accion.escuela_id, // se usa el ID de la escuela
+    });
+
+    setEditandoId(accion.id);
     mostrarMensaje("✏️ Editando acción existente");
   };
 

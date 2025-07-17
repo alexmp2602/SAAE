@@ -4,12 +4,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
-import { Home, Upload, FilePlus, Clock, CheckCircle } from "lucide-react";
+import {
+  Home,
+  School,
+  FilePlus,
+  Upload,
+  Clock,
+  CheckCircle,
+} from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Inicio", icon: Home },
-  { href: "/importar", label: "Importar Archivo", icon: Upload },
+  { href: "/escuelas", label: "Escuelas", icon: School },
   { href: "/cargar", label: "Cargar Acción", icon: FilePlus },
+  { href: "/importar", label: "Importar Archivo", icon: Upload },
   { href: "/acciones", label: "Acciones Pendientes", icon: Clock },
   { href: "/aprobaciones", label: "Aprobaciones", icon: CheckCircle },
 ];

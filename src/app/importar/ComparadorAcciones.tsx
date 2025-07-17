@@ -14,7 +14,7 @@ export default function ComparadorAcciones({ nuevas, existentes }: Props) {
       (v) =>
         v.docente === nueva.docente &&
         v.accion === nueva.accion &&
-        v.escuela === nueva.escuela &&
+        v.escuela === nueva.escuela_id &&
         v.fecha === nueva.fecha
     );
 
@@ -77,7 +77,7 @@ export default function ComparadorAcciones({ nuevas, existentes }: Props) {
                     {nueva.docente}
                   </td>
                   <td className="px-4 py-2 whitespace-nowrap">
-                    {nueva.escuela}
+                    {nueva.escuela_id}
                   </td>
                   <td className="px-4 py-2 whitespace-nowrap">
                     {nueva.accion}

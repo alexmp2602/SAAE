@@ -1,12 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { createBrowserSupabaseClient } from "@/lib/supabaseBrowserClient";
+
+type Escuela = {
+  id: string;
+  nombre: string;
+};
 
 type FormData = {
   docente: string;
   accion: string;
-  escuela: string;
+  escuela: string; // Guarda el id
   fecha: string;
   puntaje: number;
 };
@@ -27,11 +33,27 @@ export default function FormCargarAccion({
   onSubmit,
 }: Props) {
   const [enviando, setEnviando] = useState(false);
+  const [escuelas, setEscuelas] = useState<Escuela[]>([]);
+
+  useEffect(() => {
+    const fetchEscuelas = async () => {
+      const supabase = createBrowserSupabaseClient();
+      const { data, error } = await supabase
+        .from("escuelas")
+        .select("id, nombre")
+        .order("nombre", { ascending: true });
+
+      if (data) setEscuelas(data);
+      else console.error("Error al cargar escuelas:", error);
+    };
+
+    fetchEscuelas();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     setEnviando(true);
     await onSubmit(e);
-    setTimeout(() => setEnviando(false), 300); // para UX aunque sea instantáneo
+    setTimeout(() => setEnviando(false), 300);
   };
 
   const colorMensaje = mensaje.startsWith("✅")
@@ -75,14 +97,26 @@ export default function FormCargarAccion({
         </select>
       </div>
 
-      <FormInput
-        id="escuela"
-        label="Escuela"
-        placeholder="Ej. EP N°12 - Mercedes"
-        value={form.escuela}
-        onChange={onChange}
-        required
-      />
+      <div>
+        <label htmlFor="escuela" className="form-label">
+          Escuela
+        </label>
+        <select
+          id="escuela"
+          name="escuela"
+          value={form.escuela}
+          onChange={onChange}
+          className="form-input"
+          required
+        >
+          <option value="">Seleccionar escuela...</option>
+          {escuelas.map((e) => (
+            <option key={e.id} value={e.id}>
+              {e.nombre}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <FormInput
         id="fecha"
@@ -104,7 +138,6 @@ export default function FormCargarAccion({
         required
       />
 
-      {/* Botón + Mensaje */}
       <div className="lg:col-span-3 md:col-span-2 flex flex-wrap items-center gap-4 mt-2">
         <button
           type="submit"

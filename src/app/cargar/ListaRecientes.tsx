@@ -1,11 +1,11 @@
 "use client";
 
 import { motion, AnimatePresence } from "motion/react";
-import type { Accion } from "@/lib/types";
+import type { AccionConEscuela } from "@/lib/types";
 
 type Props = {
-  acciones: Accion[];
-  onEditar: (accion: Accion) => void;
+  acciones: AccionConEscuela[];
+  onEditar: (accion: AccionConEscuela) => void;
   onEliminar: (id: number) => void;
 };
 
@@ -56,7 +56,9 @@ export default function ListaRecientes({
                   >
                     <td className="px-4 py-2 whitespace-nowrap">{a.docente}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{a.accion}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{a.escuela}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {a.escuela_id}
+                    </td>
                     <td className="px-4 py-2 whitespace-nowrap">{a.fecha}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{a.puntaje}</td>
                     <td className="px-4 py-2 text-center">

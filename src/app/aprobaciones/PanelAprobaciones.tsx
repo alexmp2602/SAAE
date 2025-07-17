@@ -33,7 +33,7 @@ export default function PanelAprobaciones() {
     const rows = aprobadas.map((a) => [
       a.docente,
       a.accion,
-      a.escuela,
+      a.escuela_id,
       a.puntaje.toString(),
     ]);
 
@@ -128,7 +128,7 @@ export default function PanelAprobaciones() {
                 >
                   <td className="p-3">{a.docente}</td>
                   <td className="p-3">{a.accion}</td>
-                  <td className="p-3">{a.escuela}</td>
+                  <td className="p-3">{a.escuela_id}</td>
                   <td className="p-3">{a.puntaje}</td>
                   <td className="p-3 capitalize font-medium">
                     {a.estado === "pendiente" && (
