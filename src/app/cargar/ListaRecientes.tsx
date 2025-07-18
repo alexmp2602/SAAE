@@ -15,32 +15,36 @@ export default function ListaRecientes({
   onEliminar,
 }: Props) {
   return (
-    <section className="mt-10" aria-label="Listado de acciones recientes">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">
-        Acciones recientes
+    <section className="mt-12" aria-labelledby="acciones-recientes">
+      <h2
+        id="acciones-recientes"
+        className="text-xl font-bold text-neutral-800 mb-5"
+      >
+        📋 Acciones recientes
       </h2>
 
-      <div className="overflow-x-auto rounded-md border border-gray-300 bg-white">
-        <table className="min-w-full text-sm text-left border-collapse">
-          <thead className="bg-gray-100 text-gray-700 sticky top-0 z-10">
+      <div className="overflow-x-auto rounded-lg border border-neutral-300 shadow-sm bg-white">
+        <table className="min-w-full divide-y divide-neutral-200 text-sm">
+          <thead className="bg-neutral-100 text-neutral-700 sticky top-0 z-10">
             <tr>
-              <th className="px-4 py-2">Docente</th>
-              <th className="px-4 py-2">Acción</th>
-              <th className="px-4 py-2">Escuela</th>
-              <th className="px-4 py-2">Fecha</th>
-              <th className="px-4 py-2">Puntaje</th>
-              <th className="px-4 py-2 text-center">Opciones</th>
+              <th className="px-4 py-3 text-left font-medium">Docente</th>
+              <th className="px-4 py-3 text-left font-medium">Acción</th>
+              <th className="px-4 py-3 text-left font-medium">Escuela</th>
+              <th className="px-4 py-3 text-left font-medium">Fecha</th>
+              <th className="px-4 py-3 text-left font-medium">Puntaje</th>
+              <th className="px-4 py-3 text-center font-medium">Opciones</th>
             </tr>
           </thead>
-          <tbody>
+
+          <tbody className="divide-y divide-neutral-200">
             <AnimatePresence initial={false}>
               {acciones.length === 0 ? (
                 <tr>
                   <td
                     colSpan={6}
-                    className="text-center py-4 text-gray-500 italic"
+                    className="py-6 text-center text-neutral-500 italic"
                   >
-                    No hay acciones cargadas aún.
+                    📭 No hay acciones cargadas aún.
                   </td>
                 </tr>
               ) : (
@@ -48,32 +52,32 @@ export default function ListaRecientes({
                   <motion.tr
                     key={a.id}
                     layout
-                    initial={{ opacity: 0, y: 4 }}
+                    initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    transition={{ duration: 0.2 }}
-                    className="border-t hover:bg-gray-50 transition-colors"
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}
+                    className="hover:bg-neutral-50 transition-colors"
                   >
-                    <td className="px-4 py-2 whitespace-nowrap">{a.docente}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{a.accion}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">
+                    <td className="px-4 py-3 whitespace-nowrap">{a.docente}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">{a.accion}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
                       {a.escuela_id}
                     </td>
-                    <td className="px-4 py-2 whitespace-nowrap">{a.fecha}</td>
-                    <td className="px-4 py-2 whitespace-nowrap">{a.puntaje}</td>
-                    <td className="px-4 py-2 text-center">
-                      <div className="flex justify-center items-center gap-3">
+                    <td className="px-4 py-3 whitespace-nowrap">{a.fecha}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">{a.puntaje}</td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex justify-center gap-4">
                         <button
                           onClick={() => onEditar(a)}
                           title="Editar acción"
-                          className="text-blue-600 hover:text-blue-800 focus:outline-none transition-colors"
+                          className="text-indigo-600 hover:text-indigo-800 text-sm font-medium transition"
                         >
                           ✏️ Editar
                         </button>
                         <button
                           onClick={() => onEliminar(a.id)}
                           title="Eliminar acción"
-                          className="text-red-600 hover:text-red-800 focus:outline-none transition-colors"
+                          className="text-rose-600 hover:text-rose-800 text-sm font-medium transition"
                         >
                           🗑️ Borrar
                         </button>

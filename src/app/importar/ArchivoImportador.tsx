@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, ChangeEvent, DragEvent } from "react";
+import { useState } from "react";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
-import { UploadCloud, CheckCircle, XCircle } from "lucide-react";
-import { createBrowserSupabaseClient } from "@/lib/supabaseBrowserClient";
-import type { AccionAInsertar, ParsedAccion } from "@/lib/types";
-
+import { CheckCircle, XCircle } from "lucide-react";
 import { motion } from "motion/react";
 import { AnimatePresence } from "motion/react";
+import DropFileInput from "./DropFileInput";
+import { createBrowserSupabaseClient } from "@/lib/supabaseBrowserClient";
+import type { AccionAInsertar, ParsedAccion } from "@/lib/types";
 
 type Props = {
   accionesExistentes: ParsedAccion[];
@@ -21,8 +21,6 @@ export default function ArchivoImportador({
 }: Props) {
   const [acciones, setAcciones] = useState<ParsedAccion[]>([]);
   const [mensaje, setMensaje] = useState("");
-  const [fileName, setFileName] = useState<string>("");
-  const [isDragging, setIsDragging] = useState(false);
 
   const procesarDatos = (datos: Record<string, string>[]) => {
     try {
@@ -61,7 +59,6 @@ export default function ArchivoImportador({
   };
 
   const handleFile = (file: File) => {
-    setFileName(file.name);
     const extension = file.name.split(".").pop()?.toLowerCase();
 
     if (extension === "csv") {
@@ -90,31 +87,9 @@ export default function ArchivoImportador({
     }
   };
 
-  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleFile(file);
-  };
-
-  const handleDrop = (e: DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) handleFile(file);
-  };
-
-  const handleDragOver = (e: DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
   const importarAcciones = async () => {
     const supabase = createBrowserSupabaseClient();
 
-    // Obtener escuelas disponibles
     const { data: escuelas, error: errorEscuelas } = await supabase
       .from("escuelas")
       .select("id, nombre");
@@ -134,7 +109,7 @@ export default function ArchivoImportador({
 
       if (!escuela) {
         console.warn("Escuela no encontrada:", accion.escuela);
-        continue; // omitimos acciones con escuela no encontrada
+        continue;
       }
 
       nuevas.push({
@@ -182,43 +157,7 @@ export default function ArchivoImportador({
         Subir archivo de acciones
       </h2>
 
-      <div className="space-y-2">
-        <label
-          htmlFor="file-upload"
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          className={`flex flex-col items-center justify-center w-full border-2 border-dashed rounded-md px-6 py-8 cursor-pointer transition-colors focus:outline-none focus:ring-2 ${
-            isDragging
-              ? "bg-blue-50 border-blue-400 ring-blue-300"
-              : "bg-gray-50 border-gray-300 hover:bg-gray-100"
-          }`}
-        >
-          <UploadCloud className="w-8 h-8 mb-2 text-blue-600" />
-          <p className="text-sm text-gray-700 font-medium">
-            Arrastrá un archivo o{" "}
-            <span className="text-blue-600 underline">hacé clic</span>
-          </p>
-          <p className="text-xs text-gray-500 mt-1">
-            Formatos aceptados: <code>.csv</code> o <code>.xlsx</code>
-          </p>
-        </label>
-
-        <input
-          id="file-upload"
-          type="file"
-          accept=".csv, .xlsx"
-          onChange={handleFileUpload}
-          className="hidden"
-        />
-
-        {fileName && (
-          <p className="text-sm text-gray-700">
-            Archivo seleccionado:{" "}
-            <span className="font-medium">{fileName}</span>
-          </p>
-        )}
-      </div>
+      <DropFileInput onFileSelect={handleFile} />
 
       {acciones.length > 0 && (
         <motion.section
@@ -268,12 +207,12 @@ export default function ArchivoImportador({
                         {a.duplicado ? (
                           <>
                             <XCircle className="w-4 h-4 text-red-500" />
-                            <span className="sr-only">Duplicado</span>Sí
+                            Sí
                           </>
                         ) : (
                           <>
                             <CheckCircle className="w-4 h-4 text-green-600" />
-                            <span className="sr-only">No duplicado</span>No
+                            No
                           </>
                         )}
                       </span>

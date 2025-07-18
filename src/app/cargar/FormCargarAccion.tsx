@@ -12,7 +12,7 @@ type Escuela = {
 type FormData = {
   docente: string;
   accion: string;
-  escuela: string; // Guarda el id
+  escuela_id: string;
   fecha: string;
   puntaje: number;
 };
@@ -57,16 +57,16 @@ export default function FormCargarAccion({
   };
 
   const colorMensaje = mensaje.startsWith("✅")
-    ? "bg-green-100 text-green-800"
+    ? "bg-green-100 text-green-700 border-green-300"
     : mensaje.startsWith("⚠️")
-    ? "bg-yellow-100 text-yellow-800"
-    : "bg-red-100 text-red-700";
+    ? "bg-yellow-100 text-yellow-800 border-yellow-300"
+    : "bg-red-100 text-red-700 border-red-300";
 
   return (
     <form
       onSubmit={handleSubmit}
       aria-label="Formulario de carga de acción estatutaria"
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-white p-6 rounded-md shadow border max-w-7xl mx-auto"
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-white p-8 rounded-xl shadow-md border max-w-7xl mx-auto transition-all"
     >
       <FormInput
         id="docente"
@@ -77,46 +77,32 @@ export default function FormCargarAccion({
         required
       />
 
-      <div>
-        <label htmlFor="accion" className="form-label">
-          Acción estatutaria
-        </label>
-        <select
-          id="accion"
-          name="accion"
-          value={form.accion}
-          onChange={onChange}
-          className="form-input"
-          required
-        >
-          <option value="">Seleccionar acción...</option>
-          <option value="MAD">MAD</option>
-          <option value="Acrecentamiento">Acrecentamiento</option>
-          <option value="Servicio Provisorio">Servicio Provisorio</option>
-          <option value="Traslado">Traslado</option>
-        </select>
-      </div>
+      <SelectInput
+        id="accion"
+        label="Acción estatutaria"
+        value={form.accion}
+        onChange={onChange}
+        required
+        options={[
+          { value: "", label: "Seleccionar acción..." },
+          { value: "MAD", label: "MAD" },
+          { value: "Acrecentamiento", label: "Acrecentamiento" },
+          { value: "Servicio Provisorio", label: "Servicio Provisorio" },
+          { value: "Traslado", label: "Traslado" },
+        ]}
+      />
 
-      <div>
-        <label htmlFor="escuela" className="form-label">
-          Escuela
-        </label>
-        <select
-          id="escuela"
-          name="escuela"
-          value={form.escuela}
-          onChange={onChange}
-          className="form-input"
-          required
-        >
-          <option value="">Seleccionar escuela...</option>
-          {escuelas.map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.nombre}
-            </option>
-          ))}
-        </select>
-      </div>
+      <SelectInput
+        id="escuela_id"
+        label="Escuela"
+        value={form.escuela_id}
+        onChange={onChange}
+        required
+        options={[
+          { value: "", label: "Seleccionar escuela..." },
+          ...escuelas.map((e) => ({ value: e.id, label: e.nombre })),
+        ]}
+      />
 
       <FormInput
         id="fecha"
@@ -138,13 +124,13 @@ export default function FormCargarAccion({
         required
       />
 
-      <div className="lg:col-span-3 md:col-span-2 flex flex-wrap items-center gap-4 mt-2">
+      <div className="lg:col-span-3 md:col-span-2 flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-2">
         <button
           type="submit"
           disabled={enviando}
-          className={`px-5 py-2.5 rounded text-white transition-colors ${
+          className={`px-6 py-2.5 font-medium rounded-lg text-white transition-all ${
             enviando
-              ? "bg-blue-400 cursor-not-allowed"
+              ? "bg-blue-300 cursor-not-allowed"
               : "bg-blue-600 hover:bg-blue-700"
           }`}
         >
@@ -159,7 +145,7 @@ export default function FormCargarAccion({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 5 }}
               transition={{ duration: 0.3 }}
-              className={`text-sm px-4 py-2 rounded ${colorMensaje}`}
+              className={`text-sm px-4 py-2 border rounded-md ${colorMensaje}`}
               role="alert"
               aria-live="polite"
             >
@@ -195,7 +181,7 @@ function FormInput({
 }: FormInputProps) {
   return (
     <div>
-      <label htmlFor={id} className="form-label">
+      <label htmlFor={id} className="block mb-1 font-medium text-gray-700">
         {label}
       </label>
       <input
@@ -206,9 +192,49 @@ function FormInput({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="form-input"
         required={required}
+        className="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
       />
+    </div>
+  );
+}
+
+type SelectInputProps = {
+  id: string;
+  label: string;
+  value: string;
+  onChange: React.ChangeEventHandler<HTMLSelectElement>;
+  required?: boolean;
+  options: { value: string; label: string }[];
+};
+
+function SelectInput({
+  id,
+  label,
+  value,
+  onChange,
+  required,
+  options,
+}: SelectInputProps) {
+  return (
+    <div>
+      <label htmlFor={id} className="block mb-1 font-medium text-gray-700">
+        {label}
+      </label>
+      <select
+        id={id}
+        name={id}
+        value={value}
+        onChange={onChange}
+        required={required}
+        className="w-full px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+      >
+        {options.map(({ value, label }) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

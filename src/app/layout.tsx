@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     siteName: "SAAE",
     images: [
       {
-        url: "/og.png",
+        url: "/logo.png",
         width: 1200,
         height: 630,
         alt: "SAAE - Gestión de Acciones Docentes",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     title: "SAAE - Sistema de Administración de Acciones Estatutarias",
     description:
       "Gestión y organización de acciones docentes como MAD, Traslados y Servicios Provisorios en Región 10.",
-    images: ["/og.png"],
+    images: ["/logo.png"],
     creator: "@saae_app",
   },
   robots: {
@@ -47,7 +47,6 @@ export const metadata: Metadata = {
   },
 };
 
-// ✅ Te falta esto:
 export default function RootLayout({
   children,
 }: {
@@ -55,7 +54,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={`${geist.variable} font-sans`}>
-      <body>
+      <body className="bg-gray-50 text-gray-900 antialiased">
         <AppLayout>{children}</AppLayout>
       </body>
     </html>

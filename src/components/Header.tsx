@@ -7,16 +7,16 @@ type HeaderProps = {
 export default function Header({ onMenuClick }: HeaderProps) {
   return (
     <header
-      className="bg-gray-50 border-b border-gray-200 shadow-sm p-4"
+      className="bg-white border-b border-gray-200 shadow-sm p-4"
       role="banner"
       aria-label="Encabezado principal del sistema"
     >
-      <div className="flex justify-between items-center">
-        {/* Título + Botón hamburguesa */}
-        <div className="flex items-center gap-2">
+      <div className="flex justify-between items-center max-w-7xl mx-auto">
+        {/* Botón hamburguesa + Título */}
+        <div className="flex items-center gap-3">
           <button
-            className="sm:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             onClick={onMenuClick}
+            className="sm:hidden p-2 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             aria-label="Abrir menú de navegación"
             aria-controls="sidebar"
             aria-expanded="false"
@@ -24,21 +24,21 @@ export default function Header({ onMenuClick }: HeaderProps) {
             <IconHamburger />
           </button>
 
-          <p className="text-base md:text-lg font-medium text-gray-800 leading-tight">
+          <h1 className="text-base md:text-lg font-semibold text-gray-800 leading-snug">
             Sistema de Administración de Acciones Estatutarias
-          </p>
+          </h1>
         </div>
 
-        {/* Info de sesión del usuario */}
+        {/* Info del usuario */}
         <div
-          className="text-xs md:text-sm text-gray-500"
+          className="text-xs md:text-sm text-gray-600"
           role="contentinfo"
-          aria-label="Información del usuario"
+          aria-label="Información del usuario actual"
         >
-          Usuario:{" "}
+          Usuario:&nbsp;
           <span
-            className="font-medium text-gray-700"
-            aria-label="Nombre de usuario"
+            className="font-semibold text-gray-800"
+            aria-label="Nombre del usuario"
           >
             Lasil
           </span>

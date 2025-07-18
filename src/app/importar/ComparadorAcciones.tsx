@@ -11,11 +11,11 @@ type Props = {
 export default function ComparadorAcciones({ nuevas, existentes }: Props) {
   const comparaciones = nuevas.map((nueva) => {
     const coincidencia = existentes.find(
-      (v) =>
-        v.docente === nueva.docente &&
-        v.accion === nueva.accion &&
-        v.escuela === nueva.escuela_id &&
-        v.fecha === nueva.fecha
+      (existente) =>
+        existente.docente === nueva.docente &&
+        existente.accion === nueva.accion &&
+        existente.escuela === nueva.escuela_id &&
+        existente.fecha === nueva.fecha
     );
 
     return { nueva, vieja: coincidencia };
@@ -24,10 +24,10 @@ export default function ComparadorAcciones({ nuevas, existentes }: Props) {
   return (
     <AnimatePresence>
       <motion.section
-        className="overflow-x-auto rounded-lg border shadow-sm bg-white"
+        role="region"
         aria-labelledby="titulo-comparacion"
-        role="table"
         key="tabla-comparacion"
+        className="overflow-x-auto rounded-lg border shadow-sm bg-white"
         initial={{ opacity: 0, height: 0 }}
         animate={{ opacity: 1, height: "auto" }}
         exit={{ opacity: 0, height: 0 }}
@@ -37,21 +37,34 @@ export default function ComparadorAcciones({ nuevas, existentes }: Props) {
           Comparación de acciones nuevas con existentes
         </h2>
 
-        <table className="min-w-full border-collapse text-sm">
+        <table className="min-w-full text-sm border-collapse">
           <thead className="bg-gray-50 text-gray-700 font-semibold sticky top-0 z-10">
             <tr>
-              <th className="px-4 py-3 text-left">Docente</th>
-              <th className="px-4 py-3 text-left">Escuela</th>
-              <th className="px-4 py-3 text-left">Acción</th>
-              <th className="px-4 py-3 text-left">Fecha</th>
-              <th className="px-4 py-3 text-center">Puntaje</th>
-              <th className="px-4 py-3 text-left">Estado</th>
+              <th scope="col" className="px-4 py-3 text-left">
+                Docente
+              </th>
+              <th scope="col" className="px-4 py-3 text-left">
+                Escuela
+              </th>
+              <th scope="col" className="px-4 py-3 text-left">
+                Acción
+              </th>
+              <th scope="col" className="px-4 py-3 text-left">
+                Fecha
+              </th>
+              <th scope="col" className="px-4 py-3 text-center">
+                Puntaje
+              </th>
+              <th scope="col" className="px-4 py-3 text-left">
+                Estado
+              </th>
             </tr>
           </thead>
+
           <tbody>
             {comparaciones.map(({ nueva, vieja }, idx) => {
               const esNuevo = !vieja;
-              const cambioPuntaje = vieja && nueva.puntaje !== vieja.puntaje;
+              const cambioPuntaje = !!vieja && nueva.puntaje !== vieja.puntaje;
 
               const estado = esNuevo
                 ? "🆕 Nueva acción"
@@ -59,7 +72,7 @@ export default function ComparadorAcciones({ nuevas, existentes }: Props) {
                 ? `🔁 Puntaje: ${vieja.puntaje} → ${nueva.puntaje}`
                 : "✅ Sin cambios";
 
-              const rowColor = esNuevo
+              const rowClass = esNuevo
                 ? "bg-green-50 text-green-800"
                 : cambioPuntaje
                 ? "bg-yellow-50 text-yellow-800"
@@ -68,10 +81,10 @@ export default function ComparadorAcciones({ nuevas, existentes }: Props) {
               return (
                 <motion.tr
                   key={idx}
-                  className={`border-t ${rowColor}`}
+                  className={`border-t ${rowClass}`}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.02, duration: 0.3 }}
+                  transition={{ delay: idx * 0.01, duration: 0.25 }}
                 >
                   <td className="px-4 py-2 whitespace-nowrap">
                     {nueva.docente}

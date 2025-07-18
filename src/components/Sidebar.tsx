@@ -31,7 +31,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
 
   const content = (
-    <>
+    <div className="flex flex-col h-full">
+      {/* Logo */}
       <div className="px-4 py-6 border-b border-gray-200 flex justify-center">
         <Image
           src="/logo.png"
@@ -42,7 +43,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         />
       </div>
 
-      <nav className="p-4">
+      {/* Navegación */}
+      <nav
+        className="flex-1 overflow-y-auto p-4"
+        role="navigation"
+        aria-label="Navegación principal"
+      >
         <ul className="space-y-1">
           {navItems.map(({ href, label, icon: Icon }) => {
             const isActive = pathname === href;
@@ -52,7 +58,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <Link
                   href={href}
                   onClick={onClose}
-                  className={`flex items-center gap-3 p-3 rounded-md transition-colors outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                     isActive
                       ? "bg-blue-100 font-semibold text-blue-800 border-l-4 border-blue-600 pl-2"
                       : "hover:bg-blue-50 text-gray-800"
@@ -67,29 +73,28 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           })}
         </ul>
       </nav>
-    </>
+    </div>
   );
 
   return (
     <>
-      {/* Desktop Sidebar (siempre visible) */}
+      {/* Sidebar fijo para desktop */}
       <aside
         className="hidden sm:block w-64 h-full bg-white border-r shadow-sm"
-        role="navigation"
         aria-label="Navegación principal"
       >
         {content}
       </aside>
 
-      {/* Mobile Sidebar (animado) */}
+      {/* Sidebar móvil animado */}
       <AnimatePresence>
         {isOpen && (
           <>
             <motion.div
               className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 sm:hidden"
               onClick={onClose}
-              role="presentation"
               aria-hidden="true"
+              role="presentation"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -98,7 +103,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
             <motion.aside
               className="fixed z-50 w-64 h-full bg-white border-r shadow-sm sm:hidden"
-              role="navigation"
               aria-label="Navegación principal"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}

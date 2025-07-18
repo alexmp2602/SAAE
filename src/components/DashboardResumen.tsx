@@ -17,18 +17,18 @@ const variantStyles: Record<
     Icon: FileText,
   },
   warning: {
-    bg: "bg-yellow-100",
-    text: "text-yellow-700",
+    bg: "bg-yellow-50",
+    text: "text-yellow-800",
     Icon: Clock,
   },
   success: {
-    bg: "bg-green-100",
-    text: "text-green-700",
+    bg: "bg-green-50",
+    text: "text-green-800",
     Icon: CheckCircle,
   },
   error: {
-    bg: "bg-red-100",
-    text: "text-red-700",
+    bg: "bg-red-50",
+    text: "text-red-800",
     Icon: XCircle,
   },
 };
@@ -46,23 +46,25 @@ function CardResumen({
 
   return (
     <motion.article
-      className={`rounded-lg shadow p-4 ${bg}`}
+      className={`rounded-xl shadow-md p-5 transition-colors ${bg}`}
       role="status"
       aria-labelledby={`resumen-${label.toLowerCase().replace(/\s/g, "-")}`}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
     >
-      <div className="flex justify-between items-start mb-1">
+      <div className="flex items-start justify-between mb-2">
         <h3
           id={`resumen-${label.toLowerCase().replace(/\s/g, "-")}`}
-          className={`text-base font-medium ${text}`}
+          className={`text-sm font-medium ${text}`}
         >
           {label}
         </h3>
         <Icon className={`w-5 h-5 ${text}`} aria-hidden="true" />
       </div>
-      <p className={`text-2xl font-bold ${text}`}>{value}</p>
+      <p className={`text-3xl font-extrabold tracking-tight ${text}`}>
+        {value}
+      </p>
     </motion.article>
   );
 }
@@ -81,7 +83,7 @@ export default function DashboardResumen() {
 
   return (
     <section
-      className="grid gap-y-6 gap-x-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
       aria-labelledby="resumen-acciones"
       role="region"
     >
@@ -89,11 +91,7 @@ export default function DashboardResumen() {
         Resumen de acciones
       </h2>
 
-      <CardResumen
-        label="Total de acciones"
-        value={resumen.total}
-        variant="default"
-      />
+      <CardResumen label="Total de acciones" value={resumen.total} />
       <CardResumen
         label="Pendientes"
         value={resumen.pendientes}

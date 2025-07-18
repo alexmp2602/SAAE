@@ -11,8 +11,14 @@ type Props = {
 
 const ESCUELAS_POR_PAGINA = 10;
 
+type EscuelaConDistrito = Escuela & {
+  distritos: {
+    nombre: string;
+  } | null;
+};
+
 export default function ListaEscuelas({ onEdit, refresh }: Props) {
-  const [escuelas, setEscuelas] = useState<Escuela[]>([]);
+  const [escuelas, setEscuelas] = useState<EscuelaConDistrito[]>([]);
   const [paginaActual, setPaginaActual] = useState(1);
   const [totalEscuelas, setTotalEscuelas] = useState(0);
   const [cargando, setCargando] = useState(false);
@@ -28,11 +34,11 @@ export default function ListaEscuelas({ onEdit, refresh }: Props) {
 
     const { data, count } = await supabase
       .from("escuelas")
-      .select("*", { count: "exact" })
+      .select("*, distritos(nombre)", { count: "exact" })
       .order("nombre", { ascending: true })
       .range(desde, hasta);
 
-    if (data) setEscuelas(data);
+    if (data) setEscuelas(data as EscuelaConDistrito[]);
     if (typeof count === "number") setTotalEscuelas(count);
 
     setCargando(false);
@@ -49,35 +55,42 @@ export default function ListaEscuelas({ onEdit, refresh }: Props) {
   };
 
   return (
-    <div className="max-w-7xl mx-auto mt-6 px-4">
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border shadow">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="p-2">Nombre</th>
-              <th className="p-2">Región</th>
-              <th className="p-2">Distrito</th>
-              <th className="p-2">CUE</th>
-              <th className="p-2">Acciones</th>
+    <section
+      aria-labelledby="lista-escuelas"
+      className="max-w-7xl mx-auto mt-8 px-4"
+    >
+      <h2 id="lista-escuelas" className="sr-only">
+        Lista de escuelas registradas
+      </h2>
+
+      <div className="overflow-x-auto rounded-md shadow ring-1 ring-gray-200">
+        <table className="min-w-full divide-y divide-gray-200 bg-white">
+          <thead className="bg-gray-50 text-left text-sm font-semibold text-gray-700">
+            <tr>
+              <th className="px-4 py-3">Nombre</th>
+              <th className="px-4 py-3">Distrito</th>
+              <th className="px-4 py-3">CUE</th>
+              <th className="px-4 py-3 text-center">Acciones</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100 text-sm text-gray-800">
             {escuelas.map((e) => (
               <tr key={e.id}>
-                <td className="border px-2">{e.nombre}</td>
-                <td className="border px-2">{e.region}</td>
-                <td className="border px-2">{e.distrito}</td>
-                <td className="border px-2">{e.cue}</td>
-                <td className="border px-2 space-x-2">
+                <td className="px-4 py-2 whitespace-nowrap">{e.nombre}</td>
+                <td className="px-4 py-2 whitespace-nowrap">
+                  {e.distritos?.nombre || "-"}
+                </td>
+                <td className="px-4 py-2 whitespace-nowrap">{e.cue}</td>
+                <td className="px-4 py-2 whitespace-nowrap text-center space-x-2">
                   <button
                     onClick={() => onEdit(e)}
-                    className="text-sm bg-yellow-500 text-white px-2 py-1 rounded"
+                    className="inline-flex items-center px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-xs font-medium transition"
                   >
                     Editar
                   </button>
                   <button
                     onClick={() => handleDelete(e.id)}
-                    className="text-sm bg-red-600 text-white px-2 py-1 rounded"
+                    className="inline-flex items-center px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-medium transition"
                   >
                     Borrar
                   </button>
@@ -88,30 +101,32 @@ export default function ListaEscuelas({ onEdit, refresh }: Props) {
         </table>
       </div>
 
-      {/* Paginación */}
       {totalPaginas > 1 && (
-        <div className="flex justify-between items-center mt-4">
+        <nav
+          className="flex justify-between items-center mt-6 text-sm"
+          aria-label="Paginación de escuelas"
+        >
           <button
             disabled={paginaActual === 1 || cargando}
             onClick={() => setPaginaActual((p) => p - 1)}
-            className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             Anterior
           </button>
 
-          <span className="text-sm">
+          <span className="text-gray-600">
             Página {paginaActual} de {totalPaginas}
           </span>
 
           <button
             disabled={paginaActual === totalPaginas || cargando}
             onClick={() => setPaginaActual((p) => p + 1)}
-            className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             Siguiente
           </button>
-        </div>
+        </nav>
       )}
-    </div>
+    </section>
   );
 }

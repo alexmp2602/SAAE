@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ArchivoImportador from "./ArchivoImportador";
 import ComparadorAcciones from "./ComparadorAcciones";
+import ResumenImportacion from "./ResumenImportacion"; // 👈 nuevo import
 import type { AccionSinID, ParsedAccion } from "@/lib/types";
 
 type Props = {
@@ -18,37 +19,48 @@ export default function ImportarPageClient({ accionesExistentes }: Props) {
 
   return (
     <main
-      className="max-w-5xl mx-auto px-6 pt-6 pb-12 space-y-10"
+      className="max-w-6xl mx-auto px-6 py-10 space-y-12"
       role="main"
-      aria-labelledby="importar-titulo"
+      aria-labelledby="titulo-importar"
     >
-      <header>
+      <header className="space-y-2">
         <h1
-          id="importar-titulo"
-          className="text-3xl font-semibold mb-4 text-gray-900"
+          id="titulo-importar"
+          className="text-3xl font-bold tracking-tight text-gray-900"
         >
           Importar acciones desde archivo
         </h1>
+        <p className="text-base text-gray-600">
+          Subí un archivo CSV o Excel para agregar nuevas acciones al sistema.
+          El sistema detectará duplicados automáticamente.
+        </p>
       </header>
 
-      <ArchivoImportador
-        accionesExistentes={accionesExistentes}
-        onImportar={manejarImportacion}
-      />
+      <section aria-label="Subida de archivo">
+        <ArchivoImportador
+          accionesExistentes={accionesExistentes}
+          onImportar={manejarImportacion}
+        />
+      </section>
 
       {nuevasAcciones.length > 0 && (
-        <section aria-labelledby="nuevas-acciones">
+        <section aria-labelledby="subtitulo-comparacion" className="space-y-6">
           <div
-            className="text-sm text-green-700 font-medium"
+            className="text-sm font-medium text-green-700"
             role="status"
             aria-live="polite"
           >
-            {nuevasAcciones.length} acciones nuevas importadas con éxito.
+            ✅ Se detectaron {nuevasAcciones.length} acciones nuevas.
           </div>
 
+          <ResumenImportacion
+            nuevas={nuevasAcciones}
+            existentes={accionesExistentes}
+          />
+
           <h2
-            id="nuevas-acciones"
-            className="text-xl font-semibold text-gray-700 mt-6"
+            id="subtitulo-comparacion"
+            className="text-xl font-semibold text-gray-800"
           >
             Comparación con acciones existentes
           </h2>

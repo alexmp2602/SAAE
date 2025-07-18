@@ -3,13 +3,19 @@ export type EstadoAccion = "pendiente" | "aprobada" | "rechazada";
 
 // Modelo base de Escuela
 export type Escuela = {
-  id: string; // UUID generado por Supabase
+  id: string;
   created_at: string;
   nombre: string;
-  region: string;
-  distrito: string;
   cue: string;
+  distrito_id: string;
   activo: boolean;
+};
+
+// Escuela con join a distritos (para mostrar el nombre legible)
+export type EscuelaConDistrito = Escuela & {
+  distritos: {
+    nombre: string;
+  } | null;
 };
 
 // Acción completa almacenada en la base de datos
@@ -26,7 +32,7 @@ export type Accion = {
 
 // Acción unida con la tabla de escuelas (join)
 export type AccionConEscuela = Accion & {
-  escuelas: Escuela; // resultado del join: escuelas(*)
+  escuelas: Escuela;
 };
 
 // Acción sin campos generados por el sistema (para edición)
@@ -39,7 +45,7 @@ export type AccionAInsertar = Omit<Accion, "id" | "created_at">;
 export type ParsedAccion = {
   docente: string;
   accion: string;
-  escuela: string; // nombre visible, luego se convierte a escuela_id
+  escuela: string;
   fecha: string;
   puntaje: number;
   duplicado: boolean;
@@ -51,8 +57,8 @@ export type AccionForm = {
   accion: string;
   fecha: string;
   puntaje: number;
-  escuela: string; // nombre legible (para el select)
-  escuela_id?: string; // ID real de Supabase (relación)
+  escuela: string;
+  escuela_id?: string;
 };
 
 // Acción usada para carga directa básica (sin control de IDs)

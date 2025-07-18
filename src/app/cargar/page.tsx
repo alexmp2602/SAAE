@@ -4,13 +4,20 @@ import { useState } from "react";
 import FormCargarAccion from "@/app/cargar/FormCargarAccion";
 import ListaRecientes from "@/app/cargar/ListaRecientes";
 import { useAcciones } from "@/lib/useAcciones";
-import type { AccionConEscuela, AccionForm } from "@/lib/types";
+import type { AccionConEscuela } from "@/lib/types";
 import { motion, AnimatePresence } from "motion/react";
 
-const formInicial: AccionForm = {
+type AccionForm = {
+  docente: string;
+  accion: string;
+  escuela_id: string;
+  fecha: string;
+  puntaje: number;
+};
+
+const FORM_INICIAL: AccionForm = {
   docente: "",
   accion: "",
-  escuela: "",
   escuela_id: "",
   fecha: "",
   puntaje: 0,
@@ -18,7 +25,8 @@ const formInicial: AccionForm = {
 
 export default function CargarAccionPage() {
   const { acciones, agregarAccion, eliminarAccion } = useAcciones();
-  const [form, setForm] = useState<AccionForm>(formInicial);
+
+  const [form, setForm] = useState<AccionForm>(FORM_INICIAL);
   const [mensaje, setMensaje] = useState("");
   const [editandoId, setEditandoId] = useState<number | null>(null);
 
@@ -40,25 +48,24 @@ export default function CargarAccionPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const camposIncompletos =
-      !form.docente || !form.accion || !form.escuela_id || !form.fecha;
+    const { docente, accion, escuela_id, fecha, puntaje } = form;
 
-    if (camposIncompletos) {
+    if (!docente || !accion || !escuela_id || !fecha) {
       mostrarMensaje("⚠️ Por favor, completá todos los campos.");
       return;
     }
 
-    if (isNaN(form.puntaje) || form.puntaje < 0) {
+    if (isNaN(puntaje) || puntaje < 0) {
       mostrarMensaje("❌ El puntaje debe ser un número válido.");
       return;
     }
 
     const accionAGuardar = {
-      docente: form.docente,
-      accion: form.accion,
-      escuela_id: form.escuela_id ?? "",
-      fecha: form.fecha,
-      puntaje: form.puntaje,
+      docente,
+      accion,
+      escuela_id,
+      fecha,
+      puntaje,
     };
 
     let exito = false;
@@ -78,7 +85,7 @@ export default function CargarAccionPage() {
         : "❌ Hubo un error al guardar la acción"
     );
 
-    setForm(formInicial);
+    setForm(FORM_INICIAL);
     setEditandoId(null);
   };
 
@@ -86,9 +93,9 @@ export default function CargarAccionPage() {
     setForm({
       docente: accion.docente,
       accion: accion.accion,
+      escuela_id: accion.escuela_id,
       fecha: accion.fecha,
       puntaje: accion.puntaje,
-      escuela: accion.escuela_id, // se usa el ID de la escuela
     });
 
     setEditandoId(accion.id);
@@ -96,7 +103,10 @@ export default function CargarAccionPage() {
   };
 
   const handleEliminar = async (id: number) => {
-    if (!confirm("¿Estás seguro de que querés eliminar esta acción?")) return;
+    const confirmar = confirm(
+      "¿Estás seguro de que querés eliminar esta acción?"
+    );
+    if (!confirmar) return;
 
     const exito = await eliminarAccion(id);
 
@@ -107,13 +117,13 @@ export default function CargarAccionPage() {
     );
 
     if (editandoId === id) {
-      setForm(formInicial);
+      setForm(FORM_INICIAL);
       setEditandoId(null);
     }
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6" role="main">
+    <main className="p-6 max-w-7xl mx-auto space-y-8" role="main">
       <motion.h1
         className="text-2xl font-semibold text-gray-800"
         initial={{ opacity: 0, y: -10 }}
@@ -164,6 +174,6 @@ export default function CargarAccionPage() {
           onEliminar={handleEliminar}
         />
       </motion.section>
-    </div>
+    </main>
   );
 }

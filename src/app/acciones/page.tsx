@@ -1,64 +1,49 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import TablaFiltradaAcciones from "./TablaFiltradaAcciones";
-import { createBrowserSupabaseClient } from "@/lib/supabaseBrowserClient";
-import type { Accion } from "@/lib/types";
+import { useAcciones } from "@/lib/useAcciones";
+import type { AccionConEscuela } from "@/lib/types";
 
 export default function AccionesPage() {
-  const [acciones, setAcciones] = useState<Accion[]>([]);
-  const [cargando, setCargando] = useState(true);
+  const { acciones, loading, eliminarAccion } = useAcciones();
 
-  useEffect(() => {
-    const fetchAcciones = async () => {
-      setCargando(true);
-      const supabase = createBrowserSupabaseClient();
-      const { data, error } = await supabase
-        .from("acciones")
-        .select("*")
-        .order("fecha", { ascending: false });
-
-      if (error) {
-        console.error("Error al obtener acciones:", error.message);
-      } else if (data) {
-        setAcciones(data as Accion[]);
-      }
-
-      setCargando(false);
-    };
-
-    fetchAcciones();
-  }, []);
-
-  const handleEditar = (accion: Accion) => {
-    console.log("Editar:", accion);
-    // Acá iría la lógica para mostrar un formulario o similar
-  };
-
-  const handleEliminar = async (id: number) => {
-    const supabase = createBrowserSupabaseClient();
-    const { error } = await supabase.from("acciones").delete().eq("id", id);
-
-    if (!error) {
-      setAcciones((prev) => prev.filter((a) => a.id !== id));
-    } else {
-      console.error("Error al eliminar acción:", error.message);
-    }
+  const handleEditar = (accion: AccionConEscuela) => {
+    console.log("Editar acción:", accion);
+    // Podés abrir un modal o redireccionar a un formulario
   };
 
   return (
-    <main className="max-w-7xl mx-auto p-4">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">
-        Panel de Acciones
-      </h1>
+    <main
+      className="max-w-7xl mx-auto px-6 py-10 space-y-8"
+      role="main"
+      aria-labelledby="titulo-acciones"
+    >
+      <header className="space-y-2">
+        <h1
+          id="titulo-acciones"
+          className="text-3xl font-bold tracking-tight text-gray-900"
+        >
+          Panel de Acciones Pendientes
+        </h1>
+        <p className="text-base text-gray-600">
+          Aquí podés visualizar, editar o eliminar las acciones cargadas que aún
+          no han sido aprobadas.
+        </p>
+      </header>
 
-      {cargando ? (
-        <p className="text-gray-600">Cargando acciones...</p>
+      {loading ? (
+        <div role="status" aria-live="polite" className="text-gray-600 text-sm">
+          Cargando acciones...
+        </div>
+      ) : acciones.length === 0 ? (
+        <div role="alert" className="text-gray-500 text-sm italic">
+          No hay acciones pendientes por el momento.
+        </div>
       ) : (
         <TablaFiltradaAcciones
           acciones={acciones}
           onEditar={handleEditar}
-          onEliminar={handleEliminar}
+          onEliminar={eliminarAccion}
         />
       )}
     </main>

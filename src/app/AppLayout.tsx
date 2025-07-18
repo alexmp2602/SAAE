@@ -13,7 +13,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen h-dvh bg-gray-100 text-gray-900 antialiased transition-colors duration-300">
+    <div className="flex min-h-screen h-dvh bg-gray-100 text-gray-900 antialiased">
+      {/* Sidebar lateral */}
       <Sidebar
         isOpen={menuAbierto}
         onClose={() => setMenuAbierto(false)}
@@ -21,33 +22,43 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       />
 
       <div className="flex flex-col flex-1 overflow-hidden">
+        {/* Header superior */}
         <Header
           onMenuClick={toggleMenu}
           aria-expanded={menuAbierto}
           aria-controls="sidebar"
         />
 
-        <Toaster position="top-right" />
+        {/* Toasts */}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            style: {
+              fontSize: "0.875rem",
+            },
+          }}
+        />
 
+        {/* Contenido principal */}
         <main
           id="main-content"
           role="main"
-          className="flex-1 overflow-y-auto px-6 py-4 sm:px-8 sm:py-6"
+          className="flex-1 overflow-y-auto px-5 py-4 sm:px-8 sm:py-6"
         >
           {children}
         </main>
 
+        {/* Footer */}
         <footer
           role="contentinfo"
-          className="bg-white border-t border-gray-200 p-4 text-center text-sm text-gray-500"
+          className="bg-white border-t border-gray-200 px-4 py-4 text-center text-sm text-gray-500"
         >
-          Versión Beta - Sistema en desarrollo. Para sugerencias o errores,
-          escribí a{" "}
+          Versión Beta · Sistema en desarrollo ·{" "}
           <a
             href="mailto:alexmp.2602@gmail.com"
-            className="text-blue-600 hover:underline focus:outline-none focus:ring focus:ring-blue-400"
+            className="text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
-            alexmp.2602@gmail.com
+            Enviar sugerencia
           </a>
         </footer>
       </div>

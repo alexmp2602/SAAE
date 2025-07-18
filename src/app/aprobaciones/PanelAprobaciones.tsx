@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useAcciones } from "@/lib/useAcciones";
 
 const ACCION_OPCIONES = [
@@ -53,14 +53,20 @@ export default function PanelAprobaciones() {
     URL.revokeObjectURL(url);
   }, [accionesFiltradas]);
 
-  if (loading) return <p className="p-4 text-gray-500">Cargando acciones...</p>;
+  if (loading) {
+    return (
+      <div className="p-4 text-sm text-gray-500" role="status">
+        Cargando acciones...
+      </div>
+    );
+  }
 
   return (
     <section
       className="bg-white shadow rounded-md overflow-hidden"
       aria-label="Panel de Aprobaciones"
     >
-      {/* Filtro y botón */}
+      {/* Filtros y exportación */}
       <header className="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center gap-3">
           <label
@@ -130,9 +136,9 @@ export default function PanelAprobaciones() {
                   <td className="p-3">{a.accion}</td>
                   <td className="p-3">{a.escuela_id}</td>
                   <td className="p-3">{a.puntaje}</td>
-                  <td className="p-3 capitalize font-medium">
+                  <td className="p-3">
                     {a.estado === "pendiente" && (
-                      <span className="text-yellow-600 bg-yellow-100 px-2 py-0.5 rounded-full text-xs font-medium">
+                      <span className="text-yellow-700 bg-yellow-100 px-2 py-0.5 rounded-full text-xs font-medium">
                         Pendiente
                       </span>
                     )}
@@ -153,14 +159,14 @@ export default function PanelAprobaciones() {
                         <button
                           onClick={() => actualizarAccion(a.id, "aprobada")}
                           className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
-                          title="Aprobar"
+                          title={`Aprobar acción de ${a.docente}`}
                         >
                           Aprobar
                         </button>
                         <button
                           onClick={() => actualizarAccion(a.id, "rechazada")}
                           className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
-                          title="Rechazar"
+                          title={`Rechazar acción de ${a.docente}`}
                         >
                           Rechazar
                         </button>

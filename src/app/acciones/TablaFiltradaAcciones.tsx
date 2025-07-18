@@ -2,17 +2,17 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Accion } from "@/lib/types";
+import type { AccionConEscuela } from "@/lib/types";
 
 type Props = {
-  acciones?: Accion[];
-  onEditar: (accion: Accion) => void;
+  acciones?: AccionConEscuela[];
+  onEditar: (accion: AccionConEscuela) => void;
   onEliminar: (id: number) => void;
 };
 
 const FILAS_POR_PAGINA = 10;
 
-export default function ListaRecientes({
+export default function TablaFiltradaAcciones({
   acciones = [],
   onEditar,
   onEliminar,
@@ -138,7 +138,7 @@ export default function ListaRecientes({
                     <td className="px-4 py-2 whitespace-nowrap">{a.docente}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{a.accion}</td>
                     <td className="px-4 py-2 whitespace-nowrap">
-                      {a.escuela_id}
+                      {a.escuelas?.nombre ?? "—"}
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap">{a.fecha}</td>
                     <td className="px-4 py-2 whitespace-nowrap">{a.puntaje}</td>
