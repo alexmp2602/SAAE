@@ -61,7 +61,7 @@ export default function ListaRecientes({
                     <td className="px-4 py-3 whitespace-nowrap">{a.docente}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{a.accion}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      {a.escuela_id}
+                      {a.escuelas?.nombre ?? a.escuela_id}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">{a.fecha}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{a.puntaje}</td>

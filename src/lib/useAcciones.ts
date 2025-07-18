@@ -9,18 +9,23 @@ export function useAcciones() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAcciones();
+    fetchAcciones(); // por defecto, trae todas
   }, []);
 
-  const fetchAcciones = async () => {
+  const fetchAcciones = async (soloPendientes = false) => {
     setLoading(true);
     const supabase = createBrowserSupabaseClient();
 
-    const { data, error } = await supabase
+    let query = supabase
       .from("acciones")
       .select("*, escuelas(*)")
-      .eq("estado", "pendiente")
       .order("fecha", { ascending: false });
+
+    if (soloPendientes) {
+      query = query.eq("estado", "pendiente");
+    }
+
+    const { data, error } = await query;
 
     if (data) setAcciones(data as AccionConEscuela[]);
     else console.error("Error al obtener acciones:", error?.message);

@@ -25,7 +25,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           </button>
 
           <h1 className="text-base md:text-lg font-semibold text-gray-800 leading-snug">
-            Sistema de Administración de Acciones Estatutarias
+            Sistema de Administración de Acciones Estatutarias - Región 10
           </h1>
         </div>
 
@@ -40,7 +40,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
             className="font-semibold text-gray-800"
             aria-label="Nombre del usuario"
           >
-            Lasil
+            Silvina
           </span>
         </div>
       </div>

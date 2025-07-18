@@ -57,31 +57,31 @@ export default function ListaEscuelas({ onEdit, refresh }: Props) {
   return (
     <section
       aria-labelledby="lista-escuelas"
-      className="max-w-7xl mx-auto mt-8 px-4"
+      className="max-w-7xl mx-auto mt-10 px-4"
     >
       <h2 id="lista-escuelas" className="sr-only">
         Lista de escuelas registradas
       </h2>
 
-      <div className="overflow-x-auto rounded-md shadow ring-1 ring-gray-200">
-        <table className="min-w-full divide-y divide-gray-200 bg-white">
-          <thead className="bg-gray-50 text-left text-sm font-semibold text-gray-700">
+      <div className="overflow-x-auto rounded-xl shadow ring-1 ring-gray-200">
+        <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
+          <thead className="bg-gray-50 text-gray-700">
             <tr>
-              <th className="px-4 py-3">Nombre</th>
-              <th className="px-4 py-3">Distrito</th>
-              <th className="px-4 py-3">CUE</th>
-              <th className="px-4 py-3 text-center">Acciones</th>
+              <th className="px-4 py-3 text-left font-semibold">Nombre</th>
+              <th className="px-4 py-3 text-left font-semibold">Distrito</th>
+              <th className="px-4 py-3 text-left font-semibold">CUE</th>
+              <th className="px-4 py-3 text-center font-semibold">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 text-sm text-gray-800">
+          <tbody className="divide-y divide-gray-100 text-gray-800">
             {escuelas.map((e) => (
-              <tr key={e.id}>
+              <tr key={e.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-4 py-2 whitespace-nowrap">{e.nombre}</td>
                 <td className="px-4 py-2 whitespace-nowrap">
-                  {e.distritos?.nombre || "-"}
+                  {e.distritos?.nombre ?? "-"}
                 </td>
                 <td className="px-4 py-2 whitespace-nowrap">{e.cue}</td>
-                <td className="px-4 py-2 whitespace-nowrap text-center space-x-2">
+                <td className="px-4 py-2 text-center space-x-2">
                   <button
                     onClick={() => onEdit(e)}
                     className="inline-flex items-center px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-xs font-medium transition"
@@ -111,7 +111,7 @@ export default function ListaEscuelas({ onEdit, refresh }: Props) {
             onClick={() => setPaginaActual((p) => p - 1)}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
-            Anterior
+            ⬅️ Anterior
           </button>
 
           <span className="text-gray-600">
@@ -123,7 +123,7 @@ export default function ListaEscuelas({ onEdit, refresh }: Props) {
             onClick={() => setPaginaActual((p) => p + 1)}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
-            Siguiente
+            Siguiente ➡️
           </button>
         </nav>
       )}

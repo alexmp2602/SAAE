@@ -79,20 +79,14 @@ export default function FormEscuela({ escuela, onFinish }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto border border-gray-200"
       aria-labelledby="form-escuela"
+      className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white p-8 rounded-2xl border border-neutral-300 shadow-md max-w-3xl "
     >
-      <h2
-        id="form-escuela"
-        className="text-xl font-bold text-gray-800 tracking-tight"
-      >
-        {form.id ? "Editar Escuela" : "Agregar Nueva Escuela"}
-      </h2>
-
-      <div className="space-y-2">
+      {/* Nombre */}
+      <div className="flex flex-col gap-2">
         <label
           htmlFor="nombre"
-          className="block text-sm font-medium text-gray-700"
+          className="text-sm font-semibold text-neutral-700"
         >
           Nombre de la Escuela
         </label>
@@ -102,15 +96,16 @@ export default function FormEscuela({ escuela, onFinish }: Props) {
           placeholder="Ej: Escuela Primaria Nº 25"
           value={form.nombre}
           onChange={handleChange}
-          className="form-input w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
           required
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
         />
       </div>
 
-      <div className="space-y-2">
+      {/* Distrito */}
+      <div className="flex flex-col gap-2">
         <label
           htmlFor="distrito_id"
-          className="block text-sm font-medium text-gray-700"
+          className="text-sm font-semibold text-neutral-700"
         >
           Distrito
         </label>
@@ -119,8 +114,8 @@ export default function FormEscuela({ escuela, onFinish }: Props) {
           name="distrito_id"
           value={form.distrito_id}
           onChange={handleChange}
-          className="form-select w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
           required
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
         >
           <option value="">Seleccionar distrito</option>
           {distritos.map((d) => (
@@ -131,11 +126,9 @@ export default function FormEscuela({ escuela, onFinish }: Props) {
         </select>
       </div>
 
-      <div className="space-y-2">
-        <label
-          htmlFor="cue"
-          className="block text-sm font-medium text-gray-700"
-        >
+      {/* CUE */}
+      <div className="flex flex-col gap-2 sm:col-span-2">
+        <label htmlFor="cue" className="text-sm font-semibold text-neutral-700">
           CUE
         </label>
         <input
@@ -144,28 +137,32 @@ export default function FormEscuela({ escuela, onFinish }: Props) {
           placeholder="Ej: 060123400"
           value={form.cue}
           onChange={handleChange}
-          className="form-input w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
           required
+          className="w-full rounded-md border border-neutral-300 px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
         />
       </div>
 
-      <div className="pt-2">
+      {/* Botón */}
+      <div className="sm:col-span-2 flex justify-end">
         <button
           type="submit"
-          className="w-full sm:w-auto inline-flex justify-center items-center px-5 py-2.5 text-white bg-blue-600 hover:bg-blue-700 font-semibold rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition"
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-md shadow-sm hover:bg-blue-700 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           {form.id ? "Actualizar Escuela" : "Guardar Escuela"}
         </button>
       </div>
 
+      {/* Mensaje */}
       {mensaje && (
-        <p
-          className={`text-sm font-medium ${
-            mensaje.startsWith("✅") ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {mensaje}
-        </p>
+        <div className="sm:col-span-2">
+          <p
+            className={`text-sm font-medium ${
+              mensaje.startsWith("✅") ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {mensaje}
+          </p>
+        </div>
       )}
     </form>
   );

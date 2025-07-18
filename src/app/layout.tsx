@@ -11,7 +11,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "SAAE - Sistema de Administración de Acciones Estatutarias",
+  title: "SAAE - Región 10",
   description:
     "Sistema moderno para la gestión de acciones estatutarias docentes en la Región 10 de la Provincia de Buenos Aires.",
   metadataBase: new URL("https://saae-sist.vercel.app"),

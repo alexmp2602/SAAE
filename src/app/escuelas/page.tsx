@@ -11,17 +11,22 @@ export default function EscuelasPage() {
 
   return (
     <main
-      className="container mx-auto px-6 py-8 space-y-10"
       aria-label="Gestión de Escuelas"
+      className="max-w-6xl mx-auto px-6 py-10 space-y-12"
     >
-      <section aria-labelledby="form-escuela">
-        <header className="mb-4">
+      {/* Sección: Formulario */}
+      <section aria-labelledby="form-escuela" className="space-y-6">
+        <header className="border-b border-neutral-300 pb-4">
           <h1
             id="form-escuela"
-            className="text-2xl sm:text-3xl font-bold text-gray-800"
+            className="text-3xl font-bold text-neutral-800 tracking-tight"
           >
-            {editando ? "Editar Escuela" : "Registrar Nueva Escuela"}
+            {editando ? "✏️ Editar Escuela" : "🏫 Registrar Nueva Escuela"}
           </h1>
+          <p className="text-sm text-neutral-500 mt-1">
+            Completá el formulario para registrar una nueva escuela o editar una
+            existente.
+          </p>
         </header>
 
         <FormEscuela
@@ -33,14 +38,18 @@ export default function EscuelasPage() {
         />
       </section>
 
-      <section aria-labelledby="lista-escuelas" className="space-y-4">
-        <header>
+      {/* Sección: Lista */}
+      <section aria-labelledby="lista-escuelas" className="space-y-6">
+        <header className="border-b border-neutral-300 pb-4">
           <h2
             id="lista-escuelas"
-            className="text-xl sm:text-2xl font-semibold text-gray-700"
+            className="text-2xl font-semibold text-neutral-800"
           >
-            Listado de Escuelas
+            📋 Listado de Escuelas
           </h2>
+          <p className="text-sm text-neutral-500 mt-1">
+            Visualizá y gestioná las escuelas registradas en el sistema.
+          </p>
         </header>
 
         <ListaEscuelas
